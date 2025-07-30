@@ -1,29 +1,8 @@
 import 'package:flutter/material.dart';
-
-class CustomSizedBox extends StatelessWidget {
-  final double height;
-
-  const CustomSizedBox({super.key, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(height: height);
-  }
-}
-
-class CustomHeaderText extends StatelessWidget {
-  final String text;
-
-  const CustomHeaderText({super.key, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(fontSize: 25),
-    );
-  }
-}
+import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 
 class CategoryDropdown extends StatelessWidget {
   final String hint;
@@ -95,7 +74,7 @@ class CategoryActionRow extends StatelessWidget {
       children: [
         Flexible(
           child: isTextFormField
-              ? CustomTextFormField(
+              ? StyledTextFormField(
             controller: controller!,
             labelText: textFormFieldHint!,
           )
@@ -106,7 +85,7 @@ class CategoryActionRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        CustomActionButton(
+        StyledActionButton(
           buttonColor: buttonColor,
           buttonIcon: buttonIcon,
           onPressed: onPressed,
@@ -116,61 +95,6 @@ class CategoryActionRow extends StatelessWidget {
   }
 }
 
-class CustomTextFormField extends StatelessWidget {
-  final TextEditingController controller;
-  final String labelText;
-  final TextInputType keyboardType;
-
-  const CustomTextFormField({
-    super.key,
-    required this.controller,
-    required this.labelText,
-    this.keyboardType = TextInputType.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: const OutlineInputBorder(),
-      ),
-      keyboardType: keyboardType,
-    );
-  }
-}
-
-class CustomActionButton extends StatelessWidget {
-  final Color buttonColor;
-  final IconData buttonIcon;
-  final VoidCallback onPressed;
-
-  const CustomActionButton({
-    super.key,
-    required this.buttonColor,
-    required this.buttonIcon,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: buttonColor,
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: IconButton(
-        icon: Icon(buttonIcon, color: Colors.white),
-        onPressed: onPressed,
-      ),
-    );
-  }
-}
-// Define the list of color options
 const List<Color> predefinedColors = [
   Colors.red,
   Colors.green,

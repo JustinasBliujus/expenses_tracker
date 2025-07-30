@@ -1,18 +1,22 @@
+import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Pages/SharedWidgets/navigationDrawerCustom.dart';
-import 'package:expenses_tracker/Pages/SharedWidgets/formWidgets.dart';
+import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
+import 'package:expenses_tracker/Pages/reusableWidgets/all_widgets.dart';
 import 'package:expenses_tracker/Services/database.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:provider/provider.dart';
-
 import '../Classes/category.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
 
   @override
-  _AddExpenseState createState() => _AddExpenseState();
+  State<AddExpense> createState() => _AddExpenseState();
+
 }
 
 class _AddExpenseState extends State<AddExpense> {
@@ -25,7 +29,11 @@ class _AddExpenseState extends State<AddExpense> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2023, 8, 20),
+      firstDate: DateTime(
+        DateTime.now().year - 1,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
       lastDate: DateTime.now(),
     );
     if (pickedDate != null && pickedDate != selectedDate) {
@@ -89,15 +97,15 @@ class _AddExpenseState extends State<AddExpense> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const CustomSizedBox(height: 35),
-                  const CustomHeaderText(text: "Add An Expense"),
-                  const CustomSizedBox(height: 25),
-                  CustomTextFormField(
+                  const StyledSizedBox(height: 35),
+                  const StyledHeaderText(text: "Add An Expense"),
+                  const StyledSizedBox(height: 25),
+                  StyledTextFormField(
                     controller: amountController,
                     labelText: 'Enter Amount',
                     keyboardType: TextInputType.number,
                   ),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 25),
                   CategoryDropdown(
                     hint: 'Select Category',
                     onChanged: (newValue) {
@@ -106,7 +114,7 @@ class _AddExpenseState extends State<AddExpense> {
                       });
                     }, categoryColors: categoryColors,
                   ),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 25),
                   GestureDetector(
                     onTap: () => _selectDate(context),
                     child: InputDecorator(
@@ -119,7 +127,7 @@ class _AddExpenseState extends State<AddExpense> {
                       ),
                     ),
                   ),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 25),
                   GestureDetector(
                     onTap: () => _selectTime(context),
                     child: InputDecorator(
@@ -132,8 +140,8 @@ class _AddExpenseState extends State<AddExpense> {
                       ),
                     ),
                   ),
-                  const CustomSizedBox(height: 25),
-                  CustomActionButton(
+                  const StyledSizedBox(height: 25),
+                  StyledActionButton(
                     buttonColor: Colors.green.withOpacity(0.8),
                     buttonIcon: Icons.check,
                     onPressed: () async {

@@ -1,10 +1,12 @@
+import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Services/auth.dart';
 import '../Classes/category.dart';
 import '../Services/database.dart';
-import 'SharedWidgets/formWidgets.dart';
-import 'package:expenses_tracker/Pages/SharedWidgets/navigationDrawerCustom.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/all_widgets.dart';
+import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
 
 class ManageCategories extends StatefulWidget {
   const ManageCategories({super.key});
@@ -51,8 +53,8 @@ class _ManageCategoriesState extends State<ManageCategories> {
               child: Column(
                 children: [
                   const SizedBox(height: 125),
-                  const CustomHeaderText(text: "Add New Category"),
-                  const CustomSizedBox(height: 15),
+                  const StyledHeaderText(text: "Add New Category"),
+                  const StyledSizedBox(height: 15),
                   CategoryActionRow(
                     textFormFieldHint: 'Enter Category Name',
                     buttonColor: Colors.green.withOpacity(0.8),
@@ -72,7 +74,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                     },
                     categoryColors: categoryColors,
                   ),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 25),
                   ColorDropdown(
                     hint: 'Choose color',
                     selectedColor: _selectedColor,
@@ -86,9 +88,9 @@ class _ManageCategoriesState extends State<ManageCategories> {
                       }
                     },
                   ),
-                  const CustomSizedBox(height: 55),
-                  const CustomHeaderText(text: "Switch Categories"),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 55),
+                  const StyledHeaderText(text: "Switch Categories"),
+                  const StyledSizedBox(height: 25),
                   CategoryDropdown(
                     hint: 'Move expenses from',
                     categoryColors: categoryColors,
@@ -98,7 +100,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                       });
                     },
                   ),
-                  const CustomSizedBox(height: 25),
+                  const StyledSizedBox(height: 25),
                   CategoryActionRow(
                     dropdownHint: 'Move expenses into',
                     buttonColor: Colors.orange.withOpacity(0.8),

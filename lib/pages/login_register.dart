@@ -1,7 +1,12 @@
+import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:expenses_tracker/main.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/all_widgets.dart';
 
 class LoginRegister extends StatefulWidget {
   const LoginRegister({super.key});
@@ -47,62 +52,10 @@ class _LoginRegisterState extends State<LoginRegister> {
     }
   }
 
-  Widget _title() {
-    return const Text('Login or Register');
-  }
-
-  Widget _entryField(String title, TextEditingController controller,
-      {bool isPassword = false}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: title,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter your $title';
-        }
-        if (title == 'email' && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-          return 'Please enter a valid email';
-        }
-        if (title == 'password' && value.length < 6) {
-          return 'Password must be at least 6 characters long';
-        }
-        return null;
-      },
-    );
-  }
-
   Widget _errorMessage() {
     return Text(
       errorMessage == '' ? '' : 'Error: $errorMessage',
       style: const TextStyle(color: Colors.red),
-    );
-  }
-
-  Widget _submitButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState?.validate() ?? false) {
-          isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
-        }
-      },
-      child: Text(isLogin ? 'Login' : 'Register'),
-    );
-  }
-
-  Widget _loginOrRegisterButton() {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          isLogin = !isLogin;
-        });
-      },
-      child: Text(isLogin ? 'Register instead' : 'Login instead'),
     );
   }
 
@@ -122,9 +75,7 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: _title(),
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -135,15 +86,31 @@ class _LoginRegisterState extends State<LoginRegister> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _entryField('email', _controllerEmail),
-                  const SizedBox(height: 56),
-                  _entryField('password', _controllerPassword, isPassword: true),
-                  const SizedBox(height: 26),
+                  StyledHeaderText(text: "Login or Register"),
+                  const StyledSizedBox(height: 26),
+                  StyledTextFormField(controller: _controllerEmail, labelText: 'Email',),
+                  const SizedBox(height: 36),
+                  StyledTextFormField(controller: _controllerPassword,
+                      labelText: 'Password', isPassword: true),
+                  const StyledSizedBox(height: 16),
                   _errorMessage(),
-                  const SizedBox(height: 16),
-                  _submitButton(),
-                  const SizedBox(height: 16),
-                  _loginOrRegisterButton(),
+                  const StyledSizedBox(height: 16),
+                  StyledActionButton(
+                    buttonText:isLogin ? 'Login' : 'Register',
+                    buttonColor: Colors.green,
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
+                      }
+                    },),
+                  const StyledSizedBox(height: 16),
+                  StyledActionButton(buttonText:isLogin ? 'Register instead' : 'Login instead',
+                    buttonColor: Colors.green,
+                    onPressed: () {
+                    setState(() {
+                      isLogin = !isLogin;
+                    });
+                  },),
                   _hintText(),
                 ],
               ),

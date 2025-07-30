@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Category {
-  final String id; // Add id field
+  final String id;
   final String category;
   final String color;
 
   Category({
-    required this.id,  // Update the constructor to include id
+    required this.id,
     required this.category,
     required this.color,
   });
@@ -14,7 +14,7 @@ class Category {
   // Factory constructor to create a Category object from Firestore document data
   factory Category.fromMap(Map<String, dynamic> map, String id) {
     return Category(
-      id: id,  // Pass the id to the constructor
+      id: id,
       category: map['category'] ?? 'Unknown',
       color: map['color'] ?? 'Unknown',
     );

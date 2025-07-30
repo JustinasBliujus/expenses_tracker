@@ -1,5 +1,5 @@
 import 'package:expenses_tracker/Services/auth.dart';
-import 'package:expenses_tracker/Pages/loginRegister.dart';
+import 'package:expenses_tracker/Pages/login_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/Pages/OverviewPage/overview.dart';

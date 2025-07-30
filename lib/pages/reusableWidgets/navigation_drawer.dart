@@ -1,10 +1,12 @@
+import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/Pages/OverviewPage/overview.dart';
 import 'package:expenses_tracker/Pages/history.dart';
-import 'package:expenses_tracker/Pages/addExpense.dart';
-import 'package:expenses_tracker/Pages/manageCategories.dart';
-import 'package:expenses_tracker/Pages/loginRegister.dart';
+import 'package:expenses_tracker/Pages/add_expense.dart';
+import 'package:expenses_tracker/Pages/manage_categories.dart';
+import 'package:expenses_tracker/Pages/login_register.dart';
 import 'package:expenses_tracker/Services/auth.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/all_widgets.dart';
 
 class NavigationDrawerCustom extends StatelessWidget {
   const NavigationDrawerCustom({super.key});
@@ -22,7 +24,6 @@ class NavigationDrawerCustom extends StatelessWidget {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +93,7 @@ class NavigationDrawerCustom extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 50),
+          const StyledSizedBox(height: 50),
           ListTile(
             leading: const Icon(Icons.add),
             title: const Text("Add Expense"),
@@ -112,7 +113,7 @@ class NavigationDrawerCustom extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 50),
+          const StyledSizedBox(height: 50),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),

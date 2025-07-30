@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Pages/OverviewPage/tabBarCustom.dart';
-import 'package:expenses_tracker/Pages/SharedWidgets/navigationDrawerCustom.dart';
+import 'package:expenses_tracker/Pages/OverviewPage/top_tab_bar.dart';
+import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
 class Overview extends StatefulWidget {
   const Overview({super.key});
 

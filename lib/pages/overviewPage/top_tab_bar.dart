@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/Classes/expense.dart';
-import 'package:expenses_tracker/Pages/OverviewPage/pieChartCustom.dart';
+import 'package:expenses_tracker/Pages/OverviewPage/pie_chart.dart';
 import 'package:expenses_tracker/Services/database.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:provider/provider.dart';
