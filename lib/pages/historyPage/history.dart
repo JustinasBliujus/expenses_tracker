@@ -116,7 +116,7 @@ class HistoryListView extends StatelessWidget {
                 await db.deleteExpenseFromCategory(expense.category, expense.id);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Expense deleted successfully')),
+                  const SnackBar(content: Text('Expense deleted successfully'),backgroundColor: Colors.green),
                 );
               },
               child: const Text('Delete'),

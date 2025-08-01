@@ -43,9 +43,11 @@ class StyledTextFormField extends StatelessWidget {
       obscureText: isPassword,
       keyboardType: keyboardType,
       decoration: InputDecoration(
+        labelStyle: const TextStyle(color: Colors.black),
         labelText: labelText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.black),
         ),
       ),
       validator: _validator,

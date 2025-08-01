@@ -85,7 +85,9 @@ class _LoginRegisterState extends State<LoginRegister> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  StyledHeaderText(text: "Login or Register"),
+                  Center(
+                    child: StyledHeaderText(text: "Login or Register"),
+                  ),
                   const StyledSizedBox(height: 26),
                   StyledTextFormField(controller: _controllerEmail, labelText: 'Email',),
                   const SizedBox(height: 36),

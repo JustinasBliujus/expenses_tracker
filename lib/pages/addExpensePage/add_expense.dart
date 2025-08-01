@@ -69,7 +69,7 @@ class _AddExpenseState extends State<AddExpensePage> {
 
     if (selectedCategory == null || amountText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        const SnackBar(content: Text('Please fill in all fields'),backgroundColor: Colors.orange),
       );
       return;
     }
@@ -88,11 +88,11 @@ class _AddExpenseState extends State<AddExpensePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully')),
+        const SnackBar(content: Text('Expense added successfully'),backgroundColor: Colors.grey),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(content: Text('Error: ${e.toString()}'),backgroundColor: Colors.red),
       );
     }
   }

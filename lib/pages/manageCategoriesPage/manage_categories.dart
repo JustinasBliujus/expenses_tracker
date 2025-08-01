@@ -45,12 +45,13 @@ class _ManageCategoriesState extends State<ManageCategories> {
 
     if(categoryToMergeFirst == null || categoryToMergeSecond == null){
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select both categories to merge')),
+
+        const SnackBar(content: Text('Please select both categories to merge'),backgroundColor: Colors.orange),
       );
     }
     else if(categoryToMergeFirst == categoryToMergeSecond){
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You cannot merge the same category')),
+        const SnackBar(content: Text('You cannot merge the same category'),backgroundColor: Colors.orange),
       );
     }
     else{

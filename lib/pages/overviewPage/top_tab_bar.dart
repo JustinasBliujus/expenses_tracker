@@ -1,4 +1,5 @@
 import 'package:expenses_tracker/classes/category.dart';
+import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories.dart';
 import 'package:expenses_tracker/pages/overviewPage/pie_chart.dart';
 import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
 import 'package:expenses_tracker/services/auth.dart';
@@ -13,43 +14,75 @@ class TopTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 0,
-          bottom: const TabBar(
-            tabs: <Widget>[
-              Tab(text: "Total"),
-              Tab(text: "Daily"),
-              Tab(text: "Weekly"),
-              Tab(text: "Monthly"),
-            ],
-          ),
-        ),
-        body: const TabBarView(
-          children: <Widget>[
-            TabBarViewPage(durationType: 0),
-            TabBarViewPage(durationType: 1),
-            TabBarViewPage(durationType: 2),
-            TabBarViewPage(durationType: 3),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
-            onPressed: () => {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AddExpensePage()),
-              )
-            },
-            child: Icon(Icons.add)
-        ),
+    final user = Auth().currentUser;
+    if (user == null) return const Center(child: Text("User not signed in"));
+
+    final db = DatabaseService(uid: user.uid);
+
+    return StreamProvider<List<Category>>.value(
+      initialData: const [],
+      value: db.categories,
+      child: DefaultTabController(
+        initialIndex: 0,
+        length: 4,
+        child: Builder(builder: (context) {
+          final categories = Provider.of<List<Category>>(context);
+          final hasCategories = categories.isNotEmpty;
+
+          return Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 0,
+              bottom: TabBar(
+                dividerColor: Colors.grey,
+                unselectedLabelColor: Colors.grey,
+                labelColor: Colors.black,
+                indicatorColor: Colors.black,
+                overlayColor: MaterialStateProperty.all<Color>(Colors.white),
+                tabs: const [
+                  Tab(text: "Total"),
+                  Tab(text: "Daily"),
+                  Tab(text: "Weekly"),
+                  Tab(text: "Monthly"),
+                ],
+              ),
+            ),
+            body: const TabBarView(
+              children: <Widget>[
+                TabBarViewPage(durationType: 0),
+                TabBarViewPage(durationType: 1),
+                TabBarViewPage(durationType: 2),
+                TabBarViewPage(durationType: 3),
+              ],
+            ),
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: hasCategories ? Colors.green : Colors.grey,
+              foregroundColor: Colors.white,
+              onPressed: () {
+                if (hasCategories) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AddExpensePage()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please add a category first."),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const ManageCategories()),
+                  );
+                }
+              },
+              child: const Icon(Icons.add),
+            ),
+          );
+        }),
       ),
     );
   }
 }
+
 
 class TabBarViewPage extends StatefulWidget {
   final int durationType;
