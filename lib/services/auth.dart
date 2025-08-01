@@ -27,7 +27,7 @@ class Auth {
     // Ensure the current user is not null after account creation
     if (currentUser != null) {
       // Await first expense to initialize categories
-      await DatabaseService(uid: currentUser!.uid).initializeCategories();
+      await DatabaseService(uid: currentUser!.uid).initializeCategories();//INITIALIZING CATEGORIES
     }
   }
 

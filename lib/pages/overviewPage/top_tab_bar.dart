@@ -5,9 +5,10 @@ import 'package:expenses_tracker/Services/database.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:expenses_tracker/Classes/category.dart';
+import '../add_expense.dart';
 
-class TabBarCustom extends StatelessWidget {
-  const TabBarCustom({super.key});
+class TopTabBar extends StatelessWidget {
+  const TopTabBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,15 @@ class TabBarCustom extends StatelessWidget {
             TabBarViewPage(durationType: 3),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.green,
+            onPressed: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const AddExpense()),
+              )
+            },
+            child: Icon(Icons.add)
+        ),
       ),
     );
   }
@@ -59,9 +69,9 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
         endDate = startDate.add(const Duration(days: 1)).subtract(const Duration(seconds: 1));
         break;
       case 2: // Weekly
-        startDate = DateTime(now.year, now.month, now.day - (now.weekday - 1));
-        endDate = DateTime(now.year, now.month, now.day + (DateTime.daysPerWeek - now.weekday));
-        endDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);
+        startDate = DateTime(now.year, now.month, now.day - (now.weekday - 1));//get monday of the week
+        endDate = DateTime(now.year, now.month, now.day + (DateTime.daysPerWeek - now.weekday));//get sunday of the week
+        endDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);//set time until next week
         break;
       case 3: // Monthly
         startDate = DateTime(now.year, now.month, 1);
@@ -91,7 +101,6 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
 
     return sortedEntries;
   }
-
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
@@ -123,7 +132,7 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
       child: Consumer2<List<Expense>, List<Category>>(
         builder: (context, expenses, categories, child) {
           expenses.sort((a, b) => b.date.compareTo(a.date));
-
+          print(categories[0].color);
           // Map categories to their color
           final categoryColors = {
             for (var item in categories) item.category: item.colorFromString()
@@ -151,7 +160,6 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
                     final category = entry.key;
                     final totalAmount = entry.value;
                     final color = categoryColors[category] ?? Colors.grey;
-
                     return ListTile(
                         leading: Container(
                           width: 16,

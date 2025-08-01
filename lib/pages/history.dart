@@ -122,13 +122,6 @@ class HistoryListView extends StatelessWidget {
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
-                        // Cancel and close the dialog
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
                         // Call delete function
                         deleteExpense(context, expense.id);
                         Navigator.of(context).pop(); // Close the dialog

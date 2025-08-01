@@ -30,26 +30,6 @@ class Category {
 
   // Instance method to convert the color string to a Color object
   Color colorFromString() {
-    // Handle named colors
-    final namedColors = {
-      'Red': Colors.red,
-      'Green': Colors.green,
-      'Blue': Colors.blue,
-      'Yellow': Colors.yellow,
-      'Orange': Colors.orange,
-      'Purple': Colors.purple,
-      'Cyan': Colors.cyan,
-      'Brown': Colors.brown,
-      'Black': Colors.black,
-      'Pink': Colors.pink,
-      'Indigo': Colors.indigo,
-    };
-
-    if (namedColors.containsKey(color)) {
-      return namedColors[color]!;
-    }
-
-    // Handle hexadecimal colors
     try {
       final hexColor = color.replaceAll('#', '');
       return Color(int.parse(hexColor, radix: 16) + 0xFF000000);

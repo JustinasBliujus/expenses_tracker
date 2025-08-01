@@ -1,8 +1,10 @@
+import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
-import '../Services/auth.dart';
+import 'package:expenses_tracker/services/auth.dart';
 import '../Classes/category.dart';
 import '../Services/database.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/all_widgets.dart';
@@ -19,7 +21,21 @@ class _ManageCategoriesState extends State<ManageCategories> {
   final TextEditingController textControl = TextEditingController();
   String? selectedCategoryFrom;
   String? selectedCategoryTo;
-  Color? _selectedColor;
+  Color pickerColor = Color(0xff443a49);
+  Color? selectedColor;
+  String? categoryToDelete;
+  String? categoryToMergeFirst;
+  String? categoryToMergeSecond;
+
+  void changeColor(Color color) {
+    setState(() {
+      pickerColor = color;
+      selectedColor = pickerColor;
+      print(selectedColor);
+      Navigator.of(context).pop();
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +60,6 @@ class _ManageCategoriesState extends State<ManageCategories> {
           final categoryColors = {
             for (var item in categories) item.category: item.colorFromString()
           };
-
           return Scaffold(
             appBar: AppBar(),
             drawer: const NavigationDrawerCustom(),
@@ -52,77 +67,99 @@ class _ManageCategoriesState extends State<ManageCategories> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 125),
+                  const SizedBox(height: 85),
                   const StyledHeaderText(text: "Add New Category"),
                   const StyledSizedBox(height: 15),
                   CategoryActionRow(
                     textFormFieldHint: 'Enter Category Name',
-                    buttonColor: Colors.green.withOpacity(0.8),
+                    buttonColorFirst: selectedColor ?? Colors.grey,
+                    buttonColorSecond: Colors.green,
                     buttonIcon: Icons.check,
                     controller: textControl,
                     isTextFormField: true,
-                    onPressed: () async {
-                      if (textControl.text.isNotEmpty && _selectedColor != null) {
-                        await databaseService.addCategory(textControl.text, _getColorName(_selectedColor!));
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Category added!'),
+                    onPressedFirst: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Pick a color'),
+                          content: SingleChildScrollView(
+                            child: BlockPicker(
+                              pickerColor: selectedColor,
+                              onColorChanged: changeColor,
+                            ),
                           ),
+                        ),
+                      );
+                    },
+                    onPressedSecond: () async {
+                      if (textControl.text.isNotEmpty && selectedColor != null) {
+                        await databaseService.addNewCategory(
+                          textControl.text,
+                          selectedColor!.toHexString(),
                         );
                       }
                     },
                     categoryColors: categoryColors,
                   ),
-                  const StyledSizedBox(height: 25),
-                  ColorDropdown(
-                    hint: 'Choose color',
-                    selectedColor: _selectedColor,
-                    onChanged: (Color? newValue) {
-                      setState(() {
-                        _selectedColor = newValue;
-                      });
-                      // Print the color
-                      if (newValue != null) {
-                        _selectedColor = newValue;
-                      }
-                    },
-                  ),
-                  const StyledSizedBox(height: 55),
-                  const StyledHeaderText(text: "Switch Categories"),
-                  const StyledSizedBox(height: 25),
+                  const StyledSizedBox(height: 60),
+                  const StyledHeaderText(text: "Merge Categories"),
+                  const StyledSizedBox(height: 15),
                   CategoryDropdown(
-                    hint: 'Move expenses from',
+                    hint: "Choose First Category",
                     categoryColors: categoryColors,
-                    onChanged: (newValue) {
+                    onChanged: (value) {
                       setState(() {
-                        selectedCategoryFrom = newValue;
+                        categoryToMergeFirst = value;
                       });
                     },
                   ),
-                  const StyledSizedBox(height: 25),
-                  CategoryActionRow(
-                    dropdownHint: 'Move expenses into',
-                    buttonColor: Colors.orange.withOpacity(0.8),
-                    buttonIcon: Icons.swap_horiz,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedCategoryTo = newValue;
-                      });
-                    },
-                    onPressed: () async {
-                      if (selectedCategoryTo != null && selectedCategoryFrom != null) {
-                        await databaseService.updateExpensesCategory(selectedCategoryFrom!, selectedCategoryTo!);
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Categories switched!'),
-                          ),
-                        );
-                      }
-                    },
-                    categoryColors: categoryColors,
+                  const StyledSizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CategoryDropdown(
+                          hint: "Choose Second Category",
+                          categoryColors: categoryColors,
+                          onChanged: (value) {
+                            setState(() {
+                              categoryToMergeSecond = value;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 8,),
+                      StyledActionButton(
+                          buttonColor: Colors.green,
+                          onPressed: () => {},
+                        buttonIcon: Icons.check,
+                      )
+                    ],
                   ),
+                  const StyledSizedBox(height: 60),
+                  const StyledHeaderText(text: "Delete Category"),
+                  const StyledSizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CategoryDropdown(
+                          hint: "Choose a Category",
+                          categoryColors: categoryColors,
+                          onChanged: (value) {
+                            setState(() {
+                              categoryToDelete = value;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 8,),
+                      StyledActionButton(
+                          buttonColor: Colors.red,
+                          onPressed: () => {},
+                          buttonIcon: Icons.delete,
+                      ),
+                    ],
+                  ),
+                  const StyledSizedBox(height: 15),
                 ],
               ),
             ),
@@ -132,28 +169,4 @@ class _ManageCategoriesState extends State<ManageCategories> {
     );
   }
 
-  String _getColorName(Color color) {
-    switch (color) {
-      case Colors.red:
-        return 'Red';
-      case Colors.green:
-        return 'Green';
-      case Colors.blue:
-        return 'Blue';
-      case Colors.yellow:
-        return 'Yellow';
-      case Colors.orange:
-        return 'Orange';
-      case Colors.purple:
-        return 'Purple';
-      case Colors.cyan:
-        return 'Cyan';
-      case Colors.brown:
-        return 'Brown';
-      case Colors.grey:
-        return 'Grey';
-      default:
-        return 'Unknown';
-    }
-  }
 }

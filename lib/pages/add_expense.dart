@@ -4,7 +4,6 @@ import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
 import 'package:expenses_tracker/Pages/reusableWidgets/all_widgets.dart';
 import 'package:expenses_tracker/Services/database.dart';
 import 'package:expenses_tracker/Services/auth.dart';
@@ -81,8 +80,9 @@ class _AddExpenseState extends State<AddExpense> {
 
     final databaseService = DatabaseService(uid: user.uid);
     return Scaffold(
-      appBar: AppBar(),
-      drawer: const NavigationDrawerCustom(),
+      appBar: AppBar(
+        leading: IconButton(onPressed: () => {Navigator.pop(context)}, icon: Icon(Icons.arrow_back)),
+      ),
       body: StreamProvider<List<Category>>.value(
         initialData: const [],
         value: databaseService.categories,
@@ -161,7 +161,9 @@ class _AddExpenseState extends State<AddExpense> {
                             amount,
                             category,
                           );
-
+                          setState(() {
+                            amountController.text = "";
+                          });
                           // Show success message
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

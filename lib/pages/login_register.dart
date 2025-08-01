@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:expenses_tracker/main.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/all_widgets.dart';
 
 class LoginRegister extends StatefulWidget {
   const LoginRegister({super.key});

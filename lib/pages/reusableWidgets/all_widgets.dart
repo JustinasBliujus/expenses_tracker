@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 
@@ -47,11 +45,13 @@ class CategoryDropdown extends StatelessWidget {
 class CategoryActionRow extends StatelessWidget {
   final String? dropdownHint;
   final String? textFormFieldHint;
-  final Color buttonColor;
+  final Color buttonColorFirst;
+  final Color buttonColorSecond;
   final IconData buttonIcon;
   final TextEditingController? controller;
   final bool isTextFormField;
-  final VoidCallback onPressed;
+  final VoidCallback onPressedFirst;
+  final VoidCallback onPressedSecond;
   final ValueChanged<String?>? onChanged; // Callback for dropdown change
   final Map<String, Color> categoryColors; // Map for CategoryDropdown
 
@@ -59,11 +59,13 @@ class CategoryActionRow extends StatelessWidget {
     super.key,
     this.dropdownHint,
     this.textFormFieldHint,
-    required this.buttonColor,
+    required this.buttonColorFirst,
+    required this.buttonColorSecond,
     required this.buttonIcon,
     this.controller,
     this.isTextFormField = false,
-    required this.onPressed,
+    required this.onPressedFirst,
+    required this.onPressedSecond,
     this.onChanged,
     required this.categoryColors, // Initialize categoryColors
   });
@@ -86,9 +88,15 @@ class CategoryActionRow extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         StyledActionButton(
-          buttonColor: buttonColor,
+          buttonColor: buttonColorFirst,
+          buttonIcon: Icons.palette,
+          onPressed: onPressedFirst,
+        ),
+        const SizedBox(width: 8),
+        StyledActionButton(
+          buttonColor: buttonColorSecond,
           buttonIcon: buttonIcon,
-          onPressed: onPressed,
+          onPressed: onPressedSecond,
         ),
       ],
     );

@@ -24,7 +24,6 @@ class DatabaseService {
   }
   Future<void> deleteExpense(String expenseId) async {
     try {
-      // Delete the expense document from Firestore
       await expensesCollection.doc(expenseId).delete();
       print('Expense deleted successfully');
     } catch (e) {
@@ -32,6 +31,7 @@ class DatabaseService {
       rethrow; // Propagate the error
     }
   }
+
   Future<void> updateCategoryColor(String categoryId, Color newColor) async {
     await categoriesCollection.doc(categoryId).update({
       'color': newColor.value.toString(),
@@ -97,11 +97,11 @@ class DatabaseService {
   Future<void> initializeCategories() async {
     // Define a map of default categories and colors
     final Map<String, String> defaultCategories = {
-      'Food': 'Blue',
-      'Transport': 'Orange',
-      'Clothes': 'Green',
-      'Entertainment': 'Purple',
-      'Housing': 'Red'
+      'Food': '#0000FF',          // Blue
+      'Transport': '#FFA500',     // Orange
+      'Clothes': '#008000',       // Green
+      'Entertainment': '#800080', // Purple
+      'Housing': '#FF0000',       // Red
     };
 
     // Iterate over the default categories and add them
