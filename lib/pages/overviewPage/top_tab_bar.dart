@@ -4,8 +4,9 @@ import 'package:expenses_tracker/Pages/OverviewPage/pie_chart.dart';
 import 'package:expenses_tracker/Services/database.dart';
 import 'package:expenses_tracker/Services/auth.dart';
 import 'package:provider/provider.dart';
-import 'package:expenses_tracker/Classes/category.dart';
-import '../add_expense.dart';
+import 'package:expenses_tracker/classes/category.dart';
+
+import '../addExpensePage/add_expense.dart';
 
 class TopTabBar extends StatelessWidget {
   const TopTabBar({super.key});
@@ -37,9 +38,10 @@ class TopTabBar extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
             onPressed: () => {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AddExpense()),
+                MaterialPageRoute(builder: (context) => const AddExpensePage()),
               )
             },
             child: Icon(Icons.add)
@@ -51,6 +53,7 @@ class TopTabBar extends StatelessWidget {
 
 class TabBarViewPage extends StatefulWidget {
   final int durationType;
+
   const TabBarViewPage({super.key, required this.durationType});
 
   @override
@@ -64,119 +67,110 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
     DateTime endDate;
 
     switch (durationType) {
-      case 1: // Daily
+      case 1:
         startDate = DateTime(now.year, now.month, now.day);
-        endDate = startDate.add(const Duration(days: 1)).subtract(const Duration(seconds: 1));
+        endDate = startDate.add(const Duration(days: 1));
         break;
-      case 2: // Weekly
-        startDate = DateTime(now.year, now.month, now.day - (now.weekday - 1));//get monday of the week
-        endDate = DateTime(now.year, now.month, now.day + (DateTime.daysPerWeek - now.weekday));//get sunday of the week
-        endDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);//set time until next week
+      case 2:
+        startDate = now.subtract(Duration(days: now.weekday - 1)); // Monday
+        endDate = startDate.add(const Duration(days: 7));
         break;
-      case 3: // Monthly
-        startDate = DateTime(now.year, now.month, 1);
-        endDate = DateTime(now.year, now.month + 1, 1).subtract(const Duration(seconds: 1));
+      case 3:
+        startDate = DateTime(now.year, now.month);
+        endDate = DateTime(now.year, now.month + 1);
         break;
-      default: // Total (all time)
-        return expenses;
+      default:
+        return expenses; // Total
     }
 
-    return expenses.where((expense) {
-      return expense.date.isAfter(startDate) && expense.date.isBefore(endDate);
-    }).toList();
+    return expenses.where((e) => e.date.isAfter(startDate) && e.date.isBefore(endDate)).toList();
   }
 
   List<MapEntry<String, double>> calculateTotalsByCategory(List<Expense> expenses) {
     final Map<String, double> dataMap = {};
     for (var expense in expenses) {
-      if (dataMap.containsKey(expense.category)) {
-        dataMap[expense.category] = dataMap[expense.category]! + expense.amount;
-      } else {
-        dataMap[expense.category] = expense.amount.toDouble();
-      }
+      dataMap.update(expense.category, (v) => v + expense.amount, ifAbsent: () => expense.amount);
     }
-
-    final sortedEntries = dataMap.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedEntries;
+    return dataMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
   }
+
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
+    if (user == null) return const Center(child: Text("User not signed in"));
 
-    if (user == null) {
-      return const Center(child: Text('User not signed in'));
-    }
+    final db = DatabaseService(uid: user.uid);
 
-    final databaseService = DatabaseService(uid: user.uid);
-
-    return MultiProvider(
-      providers: [
-        StreamProvider<List<Expense>>.value(
-          initialData: const [],
-          value: databaseService.expenses.map((snapshot) {
-            return snapshot.docs.map((doc) {
-              final data = doc.data() as Map<String, dynamic>;
-              return Expense.fromMap(data, doc.id);
-            }).toList();
-          }),
-          catchError: (_, __) => const [],
-        ),
-        StreamProvider<List<Category>>.value(
-          initialData: const [],
-          value: databaseService.categories,
-          catchError: (_, __) => const [],
-        ),
-      ],
-      child: Consumer2<List<Expense>, List<Category>>(
-        builder: (context, expenses, categories, child) {
-          expenses.sort((a, b) => b.date.compareTo(a.date));
-          print(categories[0].color);
-          // Map categories to their color
+    return StreamProvider<List<Category>>.value(
+      initialData: const [],
+      value: db.categories,
+      child: Consumer<List<Category>>(
+        builder: (context, categories, _) {
           final categoryColors = {
-            for (var item in categories) item.category: item.colorFromString()
+            for (var cat in categories) cat.category: cat.colorFromString(),
           };
 
-          final filteredExpenses = filterExpenses(expenses, widget.durationType);
-          final sortedCategoryTotals = calculateTotalsByCategory(filteredExpenses);
+          return FutureBuilder<List<Expense>>(
+            future: _loadAllExpensesForUser(db, categories),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          return Column(
-            children: [
-              SizedBox(
-                height: 400,
-                child: filteredExpenses.isEmpty
-                    ? const Center(
-                  child: Text(
-                    'No expenses to track yet.',
-                    style: TextStyle(fontSize: 20),
+              final allExpenses = snapshot.data!;
+              final filteredExpenses = filterExpenses(allExpenses, widget.durationType);
+              final totals = calculateTotalsByCategory(filteredExpenses);
+
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 400,
+                    child: filteredExpenses.isEmpty
+                        ? const Center(
+                      child: Text('No expenses to track yet.', style: TextStyle(fontSize: 20)),
+                    )
+                        : ExpensePieChart(expenses: filteredExpenses, categoryColors: categoryColors),
                   ),
-                )
-                    : ExpensePieChart(expenses: filteredExpenses, categoryColors: categoryColors),
-              ),
-              Expanded(
-                child: ListView(
-                  children: sortedCategoryTotals.map((entry) {
-                    final category = entry.key;
-                    final totalAmount = entry.value;
-                    final color = categoryColors[category] ?? Colors.grey;
-                    return ListTile(
-                        leading: Container(
-                          width: 16,
-                          height: 16,
-                          color: color,
-                          margin: const EdgeInsets.only(right: 8),
-                        ),
-                        title: Text(category),
-                        trailing: Text('\$${totalAmount.toStringAsFixed(2)}'),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: totals.length,
+                      itemBuilder: (context, index) {
+                        final entry = totals[index];
+                        final color = categoryColors[entry.key] ?? Colors.grey;
+                        return ListTile(
+                          leading: Container(
+                            width: 16,
+                            height: 16,
+                            color: color,
+                            margin: const EdgeInsets.only(right: 8),
+                          ),
+                          title: Text(entry.key),
+                          trailing: Text('\$${entry.value.toStringAsFixed(2)}'),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
     );
+  }
+
+  /// Loads all expenses across all categories for the current user
+  Future<List<Expense>> _loadAllExpensesForUser(DatabaseService db, List<Category> categories) async {
+    List<Expense> all = [];
+
+    for (final cat in categories) {
+      final snapshot = await db.getExpensesForCategory(cat.id).first;
+      all.addAll(snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Expense.fromMap({...data, 'category': cat.category}, doc.id);
+      }));
+    }
+
+    return all;
   }
 }

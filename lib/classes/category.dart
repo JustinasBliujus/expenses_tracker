@@ -3,35 +3,29 @@ import 'package:flutter/material.dart';
 class Category {
   final String id;
   final String category;
-  final String color;
+  final String colorHex;
 
-  Category({
-    required this.id,
-    required this.category,
-    required this.color,
-  });
+  Category({required this.id, required this.category, required this.colorHex});
 
-  // Factory constructor to create a Category object from Firestore document data
-  factory Category.fromMap(Map<String, dynamic> map, String id) {
+  factory Category.fromMap(Map<String, dynamic> data, String documentId) {
+    print(data['color']);
     return Category(
-      id: id,
-      category: map['category'] ?? 'Unknown',
-      color: map['color'] ?? 'Unknown',
+      id: documentId,
+      category: data['category'],
+      colorHex: data['color'],
     );
   }
 
-  // Method to convert Category to a map
   Map<String, dynamic> toMap() {
     return {
       'category': category,
-      'color': color,
+      'colorHex': colorHex,
     };
   }
 
-  // Instance method to convert the color string to a Color object
   Color colorFromString() {
     try {
-      final hexColor = color.replaceAll('#', '');
+      final hexColor = colorHex.replaceAll('#', '');
       return Color(int.parse(hexColor, radix: 16) + 0xFF000000);
     } catch (e) {
       return Colors.grey;

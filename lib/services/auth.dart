@@ -24,10 +24,9 @@ class Auth {
     required String password,
   }) async {
     await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    // Ensure the current user is not null after account creation
     if (currentUser != null) {
       // Await first expense to initialize categories
-      await DatabaseService(uid: currentUser!.uid).initializeCategories();//INITIALIZING CATEGORIES
+      await DatabaseService(uid: currentUser!.uid).initializeUser();//INITIALIZING CATEGORIES
     }
   }
 

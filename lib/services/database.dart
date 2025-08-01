@@ -1,62 +1,80 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:expenses_tracker/Services/auth.dart';
-import 'package:expenses_tracker/Classes/category.dart';
+import '../classes/category.dart';
 
 class DatabaseService {
   final String? uid;
   final Auth _auth = Auth();
+
   DatabaseService({this.uid});
 
-  CollectionReference get expensesCollection => FirebaseFirestore.instance.collection('users').doc(uid).collection('expenses');
-  CollectionReference get categoriesCollection => FirebaseFirestore.instance.collection('users').doc(uid).collection('categories');
+  // Firestore references
+  CollectionReference get usersCollection => FirebaseFirestore.instance.collection('users');
+  CollectionReference get categoriesCollection => usersCollection.doc(uid).collection('categories');
 
-  Future<DocumentReference<Object?>> addExpense(DateTime date, double amount, String category) async {
-    return await expensesCollection.add(
-        {
-          'date': date,
-          'amount': amount,
-          'category': category,
-        }
-    );
-  }
-  Future<void> deleteExpense(String expenseId) async {
-    try {
-      await expensesCollection.doc(expenseId).delete();
-      print('Expense deleted successfully');
-    } catch (e) {
-      print('Failed to delete expense: $e');
-      rethrow; // Propagate the error
+  // Create the user's document
+  Future<void> initializeUser() async {
+    User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userDocRef = usersCollection.doc(user.uid);
+    final userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      await userDocRef.set({
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     }
   }
 
-  Future<void> updateCategoryColor(String categoryId, Color newColor) async {
-    await categoriesCollection.doc(categoryId).update({
-      'color': newColor.value.toString(),
+  // Add a new category
+  Future<DocumentReference> addCategory(String category, String colorHex) async {
+    return await categoriesCollection.add({
+      'category': category,
+      'color': colorHex,
     });
   }
 
-  Future<DocumentReference<Object?>> addCategory(String category, String color) async {
-    return await categoriesCollection.add(
-        {
-          'category': category,
-          'color': color,
-        }
-    );
+  // Delete expense
+  Future<void> deleteExpenseFromCategory(String categoryName, String expenseId) async {
+    final categoryQuery = await categoriesCollection
+        .where('category', isEqualTo: categoryName)
+        .limit(1)
+        .get();
+
+    if (categoryQuery.docs.isNotEmpty) {
+      final categoryDoc = categoryQuery.docs.first;
+      final expenseRef = categoryDoc.reference.collection('expenses').doc(expenseId);
+      await expenseRef.delete();
+    } else {
+      throw Exception("Category $categoryName not found.");
+    }
   }
 
-  Future<void> updateExpense(String expenseId, DateTime date, double amount, String category) async {
-    return await expensesCollection.doc(expenseId).set(
-        {
-          'date': date,
-          'amount': amount,
-          'category': category,
-        }
-    );
+  // Add expense
+  Future<void> addExpenseToCategory(DateTime date, double amount, String categoryName) async {
+    final expenseData = {
+      'date': date,
+      'amount': amount,
+      'category': categoryName,
+    };
+
+    final categoryQuery = await categoriesCollection
+        .where('category', isEqualTo: categoryName)
+        .limit(1)
+        .get();
+
+    if (categoryQuery.docs.isNotEmpty) {
+      final categoryDoc = categoryQuery.docs.first;
+      final expensesSubcollection = categoryDoc.reference.collection('expenses');
+      await expensesSubcollection.add(expenseData);
+    } else {
+      throw Exception('Category "$categoryName" not found.');
+    }
   }
 
+  // Get a stream of all categories
   Stream<List<Category>> get categories {
     return categoriesCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -66,72 +84,50 @@ class DatabaseService {
     });
   }
 
-
-  Future<void> addNewExpense(DateTime date, double amount, String category) async {
-    User? user = _auth.currentUser;
-
-    if (user != null) {
-      DatabaseService databaseService = DatabaseService(uid: user.uid);
-      await databaseService.addExpense(date, amount, category);
-    } else {
-      throw Exception('User not signed in');
-    }
+  // Get a stream of expenses for a specific category
+  Stream<QuerySnapshot> getExpensesForCategory(String categoryId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('categories')
+        .doc(categoryId)
+        .collection('expenses')
+        .snapshots();
   }
 
+  // Fetches once
+  Future<QuerySnapshot> fetchExpensesForCategory(String categoryId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('categories')
+        .doc(categoryId)
+        .collection('expenses')
+        .get();
+  }
+
+  // Add a category (with login check)
   Future<void> addNewCategory(String category, String color) async {
     User? user = _auth.currentUser;
-
     if (user != null) {
-      DatabaseService databaseService = DatabaseService(uid: user.uid);
-      await databaseService.addCategory(category, color);
+      await DatabaseService(uid: user.uid).addCategory(category, color);
     } else {
       throw Exception('User not signed in');
     }
   }
 
-  Stream<QuerySnapshot> get expenses {
-    return expensesCollection.snapshots();
-  }
+  // Delete category
+  Future<void> deleteCategoryByName(String categoryName) async {
+    final querySnapshot = await categoriesCollection
+        .where('category', isEqualTo: categoryName)
+        .get();
 
-  // Initialize categories based on the first expense
-  Future<void> initializeCategories() async {
-    // Define a map of default categories and colors
-    final Map<String, String> defaultCategories = {
-      'Food': '#0000FF',          // Blue
-      'Transport': '#FFA500',     // Orange
-      'Clothes': '#008000',       // Green
-      'Entertainment': '#800080', // Purple
-      'Housing': '#FF0000',       // Red
-    };
-
-    // Iterate over the default categories and add them
-    for (var entry in defaultCategories.entries) {
-      await addCategory(entry.key, entry.value);
-    }
-  }
-
-  // Update expenses where category is `oldCategory` to `newCategory`
-  Future<void> updateExpensesCategory(String oldCategory, String newCategory) async {
-    User? user = _auth.currentUser;
-
-    if (user == null) {
-      throw Exception('User not signed in');
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception("Category '$categoryName' not found.");
     }
 
-    try {
-      final querySnapshot = await expensesCollection.where('category', isEqualTo: oldCategory).get();
-
-      final batch = FirebaseFirestore.instance.batch();
-
-      for (final doc in querySnapshot.docs) {
-        batch.update(doc.reference, {'category': newCategory});
-      }
-
-      await batch.commit();
-      print('Categories updated successfully');
-    } catch (e) {
-      print('Failed to update categories: $e');
-      rethrow; // Propagate the error
+    for (final doc in querySnapshot.docs) {
+      await doc.reference.delete();
     }
   }
 }

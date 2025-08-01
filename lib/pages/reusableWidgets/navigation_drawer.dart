@@ -1,10 +1,10 @@
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Pages/OverviewPage/overview.dart';
-import 'package:expenses_tracker/Pages/history.dart';
-import 'package:expenses_tracker/Pages/manage_categories.dart';
-import 'package:expenses_tracker/Pages/login_register.dart';
-import 'package:expenses_tracker/Services/auth.dart';
+import 'package:expenses_tracker/pages/overviewPage/overview.dart';
+import 'package:expenses_tracker/pages/historyPage/history.dart';
+import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories.dart';
+import 'package:expenses_tracker/pages/loginRegisterPage/login_register.dart';
+import 'package:expenses_tracker/services/auth.dart';
 
 class NavigationDrawerCustom extends StatelessWidget {
   const NavigationDrawerCustom({super.key});
