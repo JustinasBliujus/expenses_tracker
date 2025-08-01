@@ -37,7 +37,7 @@ class TopTabBar extends StatelessWidget {
                 unselectedLabelColor: Colors.grey,
                 labelColor: Colors.black,
                 indicatorColor: Colors.black,
-                overlayColor: MaterialStateProperty.all<Color>(Colors.white),
+                overlayColor: MaterialStateProperty.all<Color>(Colors.grey),
                 tabs: const [
                   Tab(text: "Total"),
                   Tab(text: "Daily"),

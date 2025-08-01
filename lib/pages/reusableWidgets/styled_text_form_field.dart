@@ -14,7 +14,7 @@ class StyledTextFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
   });
 
-  /// Named constructor for password fields
+  // Named constructor for password fields
   const StyledTextFormField.password({
     super.key,
     required this.controller,
@@ -46,6 +46,10 @@ class StyledTextFormField extends StatelessWidget {
         labelStyle: const TextStyle(color: Colors.black),
         labelText: labelText,
         border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
+        focusedBorder:OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: Colors.black),
         ),

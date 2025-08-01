@@ -88,7 +88,7 @@ class _AddExpenseState extends State<AddExpensePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully'),backgroundColor: Colors.grey),
+        const SnackBar(content: Text('Expense added successfully'),backgroundColor: Colors.green),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

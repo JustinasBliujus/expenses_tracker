@@ -43,8 +43,8 @@ class TextInputWithTwoButtons extends StatelessWidget {
           )
               : CategoryDropdown(
             hint: dropdownHint ?? '',
-            categoryColors: categoryColors, // Pass categoryColors to CategoryDropdown
-            onChanged: onChanged, // Pass the onChanged callback
+            categoryColors: categoryColors,
+            onChanged: onChanged,
           ),
         ),
         const SizedBox(width: 8),

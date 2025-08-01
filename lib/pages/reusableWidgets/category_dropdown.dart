@@ -20,8 +20,14 @@ class CategoryDropdown extends StatelessWidget {
       value: selectedValue,
       decoration: InputDecoration(
         labelText: hint,
+        labelStyle: const TextStyle(color: Colors.black),
         border: const OutlineInputBorder(),
+        focusedBorder:OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
       ),
+
       items: categoryColors.keys.map((String category) {
         return DropdownMenuItem<String>(
           value: category,
