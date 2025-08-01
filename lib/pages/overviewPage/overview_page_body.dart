@@ -1,16 +1,18 @@
 import 'package:expenses_tracker/classes/category.dart';
-import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories.dart';
-import 'package:expenses_tracker/pages/overviewPage/pie_chart.dart';
+import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories_page.dart';
+import 'package:expenses_tracker/pages/overviewPage/styled_pie_chart.dart';
 import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Classes/expense.dart';
-import '../addExpensePage/add_expense.dart';
+import '../../helperFunctions/filter_expenses_by_period.dart';
+import '../addExpensePage/add_expense_page.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 
-class TopTabBar extends StatelessWidget {
-  const TopTabBar({super.key});
+class OverviewPageBody extends StatelessWidget {
+  const OverviewPageBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +35,11 @@ class TopTabBar extends StatelessWidget {
             appBar: AppBar(
               toolbarHeight: 0,
               bottom: TabBar(
-                dividerColor: Colors.grey,
-                unselectedLabelColor: Colors.grey,
-                labelColor: Colors.black,
-                indicatorColor: Colors.black,
-                overlayColor: MaterialStateProperty.all<Color>(Colors.grey),
+                dividerColor: AppColors.unknown,
+                unselectedLabelColor: AppColors.unknown,
+                labelColor: AppColors.main,
+                indicatorColor: AppColors.main,
+                overlayColor: WidgetStateProperty.all<Color>(AppColors.unknown),
                 tabs: const [
                   Tab(text: "Total"),
                   Tab(text: "Daily"),
@@ -55,8 +57,8 @@ class TopTabBar extends StatelessWidget {
               ],
             ),
             floatingActionButton: FloatingActionButton(
-              backgroundColor: hasCategories ? Colors.green : Colors.grey,
-              foregroundColor: Colors.white,
+              backgroundColor: hasCategories ? AppColors.affirmative : AppColors.unknown,
+              foregroundColor: AppColors.opposite,
               onPressed: () {
                 if (hasCategories) {
                   Navigator.of(context).push(
@@ -67,10 +69,11 @@ class TopTabBar extends StatelessWidget {
                     const SnackBar(
                       content: Text("Please add a category first."),
                       duration: Duration(seconds: 2),
+                      backgroundColor: AppColors.suggestion,
                     ),
                   );
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const ManageCategories()),
+                    MaterialPageRoute(builder: (context) => const ManageCategoriesPage()),
                   );
                 }
               },
@@ -95,31 +98,6 @@ class TabBarViewPage extends StatefulWidget {
 
 class _TabBarViewPageState extends State<TabBarViewPage> {
 
-  List<Expense> filterExpenses(List<Expense> expenses, int durationType) {
-    final now = DateTime.now();
-    DateTime startDate;
-    DateTime endDate;
-
-    switch (durationType) {
-      case 1:
-        startDate = DateTime(now.year, now.month, now.day);
-        endDate = startDate.add(const Duration(days: 1));
-        break;
-      case 2:
-        startDate = now.subtract(Duration(days: now.weekday - 1)); // Monday
-        endDate = startDate.add(const Duration(days: 7));
-        break;
-      case 3:
-        startDate = DateTime(now.year, now.month);
-        endDate = DateTime(now.year, now.month + 1);
-        break;
-      default:
-        return expenses;
-    }
-
-    return expenses.where((e) => e.date.isAfter(startDate) && e.date.isBefore(endDate)).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
@@ -142,7 +120,7 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
                 return const Center(child: CircularProgressIndicator());
               }
               final allExpenses = snapshot.data!;
-              final filteredExpenses = filterExpenses(allExpenses, widget.durationType);
+              final filteredExpenses = filterExpensesByPeriod(allExpenses, widget.durationType);
               final dataMap = aggregateExpensesByCategory(filteredExpenses);
               final totals = dataMap.entries.toList();
               return Column(
@@ -151,16 +129,16 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
                     height: 400,
                     child: filteredExpenses.isEmpty
                         ? const Center(
-                      child: Text('No expenses to track yet.', style: TextStyle(fontSize: 20)),
+                      child: Text('No expenses to track yet.', style: TextStyle()),
                     )
-                        : ExpensePieChart(expenses: filteredExpenses, categoryColors: categoryColors),
+                        : StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors),
                   ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: totals.length,
                       itemBuilder: (context, index) {
                         final entry = totals[index];
-                        final color = categoryColors[entry.key] ?? Colors.grey;
+                        final color = categoryColors[entry.key] ?? AppColors.unknown;
                         return ListTile(
                           leading: Container(
                             width: 16,

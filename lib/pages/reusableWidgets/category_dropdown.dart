@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 
 class CategoryDropdown extends StatelessWidget {
   final String hint;
@@ -20,11 +21,11 @@ class CategoryDropdown extends StatelessWidget {
       value: selectedValue,
       decoration: InputDecoration(
         labelText: hint,
-        labelStyle: const TextStyle(color: Colors.black),
+        labelStyle: const TextStyle(color: AppColors.main),
         border: const OutlineInputBorder(),
         focusedBorder:OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: Colors.black),
+          borderSide: const BorderSide(color: AppColors.main),
         ),
       ),
 

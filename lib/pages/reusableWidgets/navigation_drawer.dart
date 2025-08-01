@@ -1,10 +1,13 @@
-import 'package:expenses_tracker/pages/historyPage/history.dart';
-import 'package:expenses_tracker/pages/loginRegisterPage/login_register.dart';
-import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories.dart';
-import 'package:expenses_tracker/pages/overviewPage/overview.dart';
+import 'package:expenses_tracker/pages/historyPage/history_page.dart';
+import 'package:expenses_tracker/pages/loginRegisterPage/login_register_page.dart';
+import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories_page.dart';
+import 'package:expenses_tracker/pages/overviewPage/overview_page.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/styled_horizontal_divider.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
 
 class NavigationDrawerCustom extends StatelessWidget {
   const NavigationDrawerCustom({super.key});
@@ -42,7 +45,7 @@ class NavigationDrawerCustom extends StatelessWidget {
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Container(
         decoration: const BoxDecoration(
-          color: Colors.black87,
+          color: AppColors.main,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,12 +54,7 @@ class NavigationDrawerCustom extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 30),
               child: Text(
                 Auth().currentUser?.email ?? 'Email',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
-                ),
+                style: TextStyles.userEmail,
               ),
             ),
           ],
@@ -77,17 +75,17 @@ class NavigationDrawerCustom extends StatelessWidget {
             title: const Text("Overview",),
             onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Overview()),
+                MaterialPageRoute(builder: (context) => const OverviewPage()),
               );
             },
           ),
-          const Divider(),
+          const StyledHorizontalDivider(),
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text("History"),
             onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const History()),
+                MaterialPageRoute(builder: (context) => const HistoryPage()),
               );
             },
           ),
@@ -97,11 +95,11 @@ class NavigationDrawerCustom extends StatelessWidget {
             title: const Text("Manage Categories"),
             onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const ManageCategories()),
+                MaterialPageRoute(builder: (context) => const ManageCategoriesPage()),
               );
             },
           ),
-          const Divider(),
+          const StyledHorizontalDivider(),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text("Log out"),

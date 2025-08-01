@@ -1,14 +1,14 @@
 import 'package:expenses_tracker/classes/category.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
 
 class AddExpensePage extends StatefulWidget {
   const AddExpensePage({super.key});
@@ -69,7 +69,7 @@ class _AddExpenseState extends State<AddExpensePage> {
 
     if (selectedCategory == null || amountText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'),backgroundColor: Colors.orange),
+        const SnackBar(content: Text('Please fill in all fields'),backgroundColor: AppColors.suggestion),
       );
       return;
     }
@@ -88,11 +88,11 @@ class _AddExpenseState extends State<AddExpensePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully'),backgroundColor: Colors.green),
+        const SnackBar(content: Text('Expense added successfully'),backgroundColor: AppColors.affirmative),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}'),backgroundColor: Colors.red),
+        SnackBar(content: Text('Error: ${e.toString()}'),backgroundColor: AppColors.error),
       );
     }
   }
@@ -129,7 +129,7 @@ class _AddExpenseState extends State<AddExpensePage> {
                 child: Column(
                   children: [
                     const StyledSizedBox(height: 35),
-                    const StyledHeaderText(text: "Add An Expense"),
+                    const Text("Add An Expense",style: TextStyles.header,),
                     const StyledSizedBox(height: 25),
                     StyledTextFormField(
                       controller: amountController,
@@ -170,7 +170,7 @@ class _AddExpenseState extends State<AddExpensePage> {
                     ),
                     const StyledSizedBox(height: 25),
                     StyledActionButton(
-                      buttonColor: Colors.green.withOpacity(0.8),
+                      buttonColor: AppColors.affirmative,
                       buttonIcon: Icons.check,
                       onPressed: () => submitExpense(databaseService),
                     ),

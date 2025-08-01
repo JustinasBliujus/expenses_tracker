@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 
 class StyledActionButton extends StatelessWidget {
   final Color buttonColor;
@@ -26,13 +27,13 @@ class StyledActionButton extends StatelessWidget {
       ),
       child: buttonIcon != null
           ? IconButton(
-        icon: Icon(buttonIcon, color: Colors.white),
+        icon: Icon(buttonIcon, color: AppColors.opposite),
         onPressed: onPressed,
       )
           : TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.opposite,
           padding: EdgeInsets.zero,
           minimumSize: Size(50, 50),
           backgroundColor: buttonColor,

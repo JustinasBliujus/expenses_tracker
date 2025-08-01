@@ -1,24 +1,26 @@
 import 'package:expenses_tracker/Classes/expense.dart';
-import 'package:expenses_tracker/services/database.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 
-class ExpensePieChart extends StatefulWidget {
+import '../reusableWidgets/text_styles.dart';
+
+class StyledPieChart extends StatefulWidget {
   final List<Expense> expenses;
   final Map<String, Color> categoryColors;
 
-  const ExpensePieChart({
+  const StyledPieChart({
     required this.expenses,
     super.key,
     required this.categoryColors,
   });
 
   @override
-  State<ExpensePieChart> createState() => _ExpensePieChartState();
+  State<StyledPieChart> createState() => _StyledPieChartState();
 }
 
-class _ExpensePieChartState extends State<ExpensePieChart> {
+class _StyledPieChartState extends State<StyledPieChart> {
   int? touchIndex;
 
   @override
@@ -42,15 +44,11 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
               final percentage = (amount / total * 100).toStringAsFixed(1);
 
               return PieChartSectionData(
-                color: widget.categoryColors[category] ?? Colors.grey,
+                color: widget.categoryColors[category] ??AppColors.unknown,
                 value: amount,
                 title: '$percentage%',
                 radius: touchIndex == index ? 70 : 60,
-                titleStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                titleStyle: TextStyles.pieChartPercentage,
               );
             }).toList(),
             sectionsSpace: 2,
@@ -69,17 +67,13 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
               },
             ),
           ),
-          swapAnimationDuration: const Duration(milliseconds: 80),
+          duration: const Duration(milliseconds: 80),
         ),
         Positioned.fill(
           child: Center(
             child: Text(
               '\$${total.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: TextStyles.pieChartTotal,
             ),
           ),
         ),

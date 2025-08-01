@@ -2,7 +2,6 @@ import 'package:expenses_tracker/pages/manageCategoriesPage//text_input_with_two
 import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/navigation_drawer.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -10,19 +9,22 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import '../../classes/category.dart';
 import '../../services/database.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 
-class ManageCategories extends StatefulWidget {
-  const ManageCategories({super.key});
+import '../reusableWidgets/text_styles.dart';
+
+class ManageCategoriesPage extends StatefulWidget {
+  const ManageCategoriesPage({super.key});
 
   @override
-  State<ManageCategories> createState() => _ManageCategoriesState();
+  State<ManageCategoriesPage> createState() => _ManageCategoriesPageState();
 }
 
-class _ManageCategoriesState extends State<ManageCategories> {
+class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
   final TextEditingController textControl = TextEditingController();
   String? selectedCategoryFrom;
   String? selectedCategoryTo;
-  Color pickerColor = Color(0xff443a49);
+  Color pickerColor = AppColors.affirmative;
   Color? selectedColor;
   String? categoryToDelete;
   String? categoryToMergeFirst;
@@ -46,12 +48,12 @@ class _ManageCategoriesState extends State<ManageCategories> {
     if(categoryToMergeFirst == null || categoryToMergeSecond == null){
       ScaffoldMessenger.of(context).showSnackBar(
 
-        const SnackBar(content: Text('Please select both categories to merge'),backgroundColor: Colors.orange),
+        const SnackBar(content: Text('Please select both categories to merge'),backgroundColor: AppColors.suggestion),
       );
     }
     else if(categoryToMergeFirst == categoryToMergeSecond){
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You cannot merge the same category'),backgroundColor: Colors.orange),
+        const SnackBar(content: Text('You cannot merge the same category'),backgroundColor: AppColors.suggestion),
       );
     }
     else{
@@ -64,11 +66,11 @@ class _ManageCategoriesState extends State<ManageCategories> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Categories merged'), backgroundColor: Colors.green),
+          SnackBar(content: Text('Categories merged'), backgroundColor: AppColors.affirmative),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to merge categories: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to merge categories: ${e.toString()}'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -82,7 +84,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Category name already exists'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.suggestion,
             duration: Duration(seconds: 2),
           ),
         );
@@ -100,7 +102,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Category added successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.affirmative,
             duration: Duration(seconds: 2),
           ),
         );
@@ -113,7 +115,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to add category'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: Duration(seconds: 2),
           ),
         );
@@ -122,7 +124,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please enter a name and select a color'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.suggestion,
           duration: Duration(seconds: 2),
         ),
       );
@@ -161,12 +163,12 @@ class _ManageCategoriesState extends State<ManageCategories> {
               child: Column(
                 children: [
                   const SizedBox(height: 85),
-                  const StyledHeaderText(text: "Add New Category"),
+                  const Text("Add New Category", style: TextStyles.header,),
                   SizedBox(height: 15),
                   TextInputWithTwoButtons(
                     textFormFieldHint: 'Enter Category Name',
-                    buttonColorFirst: selectedColor ?? Colors.grey,
-                    buttonColorSecond: Colors.green,
+                    buttonColorFirst: selectedColor ?? AppColors.unknown,
+                    buttonColorSecond: AppColors.affirmative,
                     buttonIcon: Icons.check,
                     controller: textControl,
                     isTextFormField: true,
@@ -188,7 +190,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                     categoryColors: categoryColors,
                   ),
                   const StyledSizedBox(height: 60),
-                  const StyledHeaderText(text: "Merge Categories"),
+                  const Text("Merge Categories",style: TextStyles.header,),
                   const StyledSizedBox(height: 15),
                   CategoryDropdown(
                     hint: "Category To Delete",
@@ -219,7 +221,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                       ),
                       SizedBox(width: 8,),
                       StyledActionButton(
-                        buttonColor: Colors.green,
+                        buttonColor: AppColors.affirmative,
                         onPressed: () {
                           mergeCategories();
                         },

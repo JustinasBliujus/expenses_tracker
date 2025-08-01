@@ -1,18 +1,16 @@
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
 import '../../Classes/expense.dart';
 import '../../classes/category.dart';
 import '../../services/auth.dart';
 import '../../services/database.dart';
 import '../reusableWidgets/navigation_drawer.dart';
 
-class History extends StatelessWidget {
-  const History({super.key});
+class HistoryPage extends StatelessWidget {
+  const HistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +50,7 @@ class HistoryListView extends StatelessWidget {
     };
 
     if (categories.isEmpty) {
-      return const Center(child: Text('No History Found.'));
+      return const Center(child: Text('No History Found.',style: TextStyles.dataMissing,));
     }
 
     return FutureBuilder<List<Expense>>(
@@ -64,7 +62,7 @@ class HistoryListView extends StatelessWidget {
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(
-            child: Text('No expenses found.', style: TextStyle(fontSize: 20)),
+            child: Text('No expenses found.', style: TextStyles.dataMissing),
           );
         }
 
@@ -80,7 +78,7 @@ class HistoryListView extends StatelessWidget {
           itemCount: expenses.length,
           itemBuilder: (context, index) {
             final expense = expenses[index];
-            final color = categoryColors[expense.category] ?? Colors.grey;
+            final color = categoryColors[expense.category] ?? AppColors.unknown;
 
             return ListTile(
               leading: Container(
@@ -91,7 +89,7 @@ class HistoryListView extends StatelessWidget {
               ),
               title: Text(expense.category),
               subtitle: Text(formatDate(expense.date),
-                  style: const TextStyle(fontSize: 12)),
+                  style: TextStyles.small),
               trailing: Text('\$${expense.amount.toStringAsFixed(2)}'),
               onLongPress: () => _showDeleteDialog(context, expense),
             );
@@ -116,7 +114,7 @@ class HistoryListView extends StatelessWidget {
                 await db.deleteExpenseFromCategory(expense.category, expense.id);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Expense deleted successfully'),backgroundColor: Colors.green),
+                  const SnackBar(content: Text('Expense deleted successfully'),backgroundColor: AppColors.affirmative),
                 );
               },
               child: const Text('Delete'),

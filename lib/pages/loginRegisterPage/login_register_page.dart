@@ -1,11 +1,13 @@
 import 'package:expenses_tracker/main.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+
+import '../reusableWidgets/text_styles.dart';
 
 class LoginRegister extends StatefulWidget {
   const LoginRegister({super.key});
@@ -54,7 +56,7 @@ class _LoginRegisterState extends State<LoginRegister> {
   Widget _errorMessage() {
     return Text(
       errorMessage == '' ? '' : 'Error: $errorMessage',
-      style: const TextStyle(color: Colors.red),
+      style: const TextStyle(color: AppColors.error),
     );
   }
 
@@ -65,7 +67,7 @@ class _LoginRegisterState extends State<LoginRegister> {
         isLogin
             ? 'Use a valid email and a password with at least 6 characters.'
             : 'Make sure your password is strong and at least 6 characters long.',
-        style: const TextStyle(color: Colors.grey),
+        style: const TextStyle(color: AppColors.unknown),
         textAlign: TextAlign.center,
       ),
     );
@@ -86,11 +88,11 @@ class _LoginRegisterState extends State<LoginRegister> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Center(
-                    child: StyledHeaderText(text: "Login or Register"),
+                    child: Text("Login or Register",style: TextStyles.header,),
                   ),
                   const StyledSizedBox(height: 26),
                   StyledTextFormField(controller: _controllerEmail, labelText: 'Email',),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 16),
                   StyledTextFormField(controller: _controllerPassword,
                       labelText: 'Password', isPassword: true),
                   const StyledSizedBox(height: 16),
@@ -98,7 +100,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                   const StyledSizedBox(height: 16),
                   StyledActionButton(
                     buttonText:isLogin ? 'Login' : 'Register',
-                    buttonColor: Colors.green,
+                    buttonColor: AppColors.affirmative,
                     onPressed: () {
                       if (_formKey.currentState?.validate() ?? false) {
                         isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
@@ -106,7 +108,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                     },),
                   const StyledSizedBox(height: 16),
                   StyledActionButton(buttonText:isLogin ? 'Register instead' : 'Login instead',
-                    buttonColor: Colors.green,
+                    buttonColor: AppColors.affirmative,
                     onPressed: () {
                     setState(() {
                       isLogin = !isLogin;

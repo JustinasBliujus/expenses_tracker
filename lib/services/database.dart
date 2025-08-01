@@ -37,6 +37,7 @@ class DatabaseService {
       'color': colorHex,
     });
   }
+
   Future<void> mergeCategories(String fromCategory, String toCategory) async {
     final db = DatabaseService(uid: uid);
 
@@ -151,6 +152,7 @@ class DatabaseService {
     }
   }
 
+  //fetch all expenses
   Future<List<Expense>> fetchAllExpenses(List<Category> categories) async {
     final List<Expense> allExpenses = [];
 
@@ -171,26 +173,5 @@ class DatabaseService {
     }
 
     return allExpenses;
-  }
-  static Map<String, double> aggregateExpensesByCategory(List<Expense> expenses) {
-    final Map<String, double> dataMap = {};
-    for (var expense in expenses) {
-      dataMap.update(expense.category, (value) => value + expense.amount, ifAbsent: () => expense.amount.toDouble());
-    }
-    return dataMap;
-  }
-  // Delete category
-  Future<void> deleteCategoryByName(String categoryName) async {
-    final querySnapshot = await categoriesCollection
-        .where('category', isEqualTo: categoryName)
-        .get();
-
-    if (querySnapshot.docs.isEmpty) {
-      throw Exception("Category '$categoryName' not found.");
-    }
-
-    for (final doc in querySnapshot.docs) {
-      await doc.reference.delete();
-    }
   }
 }
