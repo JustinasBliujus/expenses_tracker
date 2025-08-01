@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expenses_tracker/Services/auth.dart';
-import 'package:expenses_tracker/Services/database.dart';
-import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
-import 'package:intl/intl.dart';
-import 'package:expenses_tracker/Classes/expense.dart';
-import 'package:expenses_tracker/classes/category.dart';
 
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../../Classes/expense.dart';
+import '../../classes/category.dart';
+import '../../services/auth.dart';
+import '../../services/database.dart';
+import '../reusableWidgets/navigation_drawer.dart';
 
 class History extends StatelessWidget {
   const History({super.key});
@@ -43,6 +45,8 @@ class HistoryListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = Provider.of<List<Category>>(context);
+    final databaseService = DatabaseService(uid: Auth().currentUser!.uid);
+
     final categoryColors = {
       for (var cat in categories) cat.category: cat.colorFromString()
     };
@@ -52,14 +56,16 @@ class HistoryListView extends StatelessWidget {
     }
 
     return FutureBuilder<List<Expense>>(
-      future: _fetchAllExpenses(context, categories),
+      future: databaseService.fetchAllExpenses(categories),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No expenses found.', style: TextStyle(fontSize: 20)));
+          return const Center(
+            child: Text('No expenses found.', style: TextStyle(fontSize: 20)),
+          );
         }
 
         final expenses = snapshot.data!;
@@ -84,7 +90,8 @@ class HistoryListView extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 8),
               ),
               title: Text(expense.category),
-              subtitle: Text(formatDate(expense.date), style: const TextStyle(fontSize: 12)),
+              subtitle: Text(formatDate(expense.date),
+                  style: const TextStyle(fontSize: 12)),
               trailing: Text('\$${expense.amount.toStringAsFixed(2)}'),
               onLongPress: () => _showDeleteDialog(context, expense),
             );
@@ -92,28 +99,6 @@ class HistoryListView extends StatelessWidget {
         );
       },
     );
-  }
-
-  Future<List<Expense>> _fetchAllExpenses(BuildContext context, List<Category> categories) async {
-    final List<Expense> allExpenses = [];
-
-    for (final category in categories) {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(Auth().currentUser!.uid)
-          .collection('categories')
-          .doc(category.id)
-          .collection('expenses')
-          .get();
-
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-        final expense = Expense.fromMap(data, doc.id);
-        allExpenses.add(expense);
-      }
-    }
-
-    return allExpenses;
   }
 
 

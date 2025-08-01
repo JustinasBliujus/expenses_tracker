@@ -1,13 +1,13 @@
+import 'package:expenses_tracker/classes/category.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
+import 'package:expenses_tracker/services/auth.dart';
+import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Services/database.dart';
-import 'package:expenses_tracker/Services/auth.dart';
 import 'package:provider/provider.dart';
-import 'package:expenses_tracker/classes/category.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 
 
 class AddExpensePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _AddExpenseState extends State<AddExpensePage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
-  void _selectDate(BuildContext context) async {
+  void selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -44,7 +44,7 @@ class _AddExpenseState extends State<AddExpensePage> {
     }
   }
 
-  void _selectTime(BuildContext context) async {
+  void selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime,
@@ -64,7 +64,7 @@ class _AddExpenseState extends State<AddExpensePage> {
     }
   }
 
-  Future<void> _submitExpense(DatabaseService databaseService) async {
+  Future<void> submitExpense(DatabaseService databaseService) async {
     final amountText = amountController.text.trim();
 
     if (selectedCategory == null || amountText.isEmpty) {
@@ -148,7 +148,7 @@ class _AddExpenseState extends State<AddExpensePage> {
                     ),
                     const StyledSizedBox(height: 25),
                     GestureDetector(
-                      onTap: () => _selectDate(context),
+                      onTap: () => selectDate(context),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           labelText: 'Select Date',
@@ -159,7 +159,7 @@ class _AddExpenseState extends State<AddExpensePage> {
                     ),
                     const StyledSizedBox(height: 25),
                     GestureDetector(
-                      onTap: () => _selectTime(context),
+                      onTap: () => selectTime(context),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           labelText: 'Select Time',
@@ -172,7 +172,7 @@ class _AddExpenseState extends State<AddExpensePage> {
                     StyledActionButton(
                       buttonColor: Colors.green.withOpacity(0.8),
                       buttonIcon: Icons.check,
-                      onPressed: () => _submitExpense(databaseService),
+                      onPressed: () => submitExpense(databaseService),
                     ),
                   ],
                 ),

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Classes/expense.dart';
-import 'package:expenses_tracker/Pages/OverviewPage/pie_chart.dart';
-import 'package:expenses_tracker/Services/database.dart';
-import 'package:expenses_tracker/Services/auth.dart';
-import 'package:provider/provider.dart';
 import 'package:expenses_tracker/classes/category.dart';
-
+import 'package:expenses_tracker/pages/overviewPage/pie_chart.dart';
+import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
+import 'package:expenses_tracker/services/auth.dart';
+import 'package:expenses_tracker/services/database.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../Classes/expense.dart';
 import '../addExpensePage/add_expense.dart';
 
 class TopTabBar extends StatelessWidget {
@@ -61,6 +61,7 @@ class TabBarViewPage extends StatefulWidget {
 }
 
 class _TabBarViewPageState extends State<TabBarViewPage> {
+
   List<Expense> filterExpenses(List<Expense> expenses, int durationType) {
     final now = DateTime.now();
     DateTime startDate;
@@ -80,18 +81,10 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
         endDate = DateTime(now.year, now.month + 1);
         break;
       default:
-        return expenses; // Total
+        return expenses;
     }
 
     return expenses.where((e) => e.date.isAfter(startDate) && e.date.isBefore(endDate)).toList();
-  }
-
-  List<MapEntry<String, double>> calculateTotalsByCategory(List<Expense> expenses) {
-    final Map<String, double> dataMap = {};
-    for (var expense in expenses) {
-      dataMap.update(expense.category, (v) => v + expense.amount, ifAbsent: () => expense.amount);
-    }
-    return dataMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
   }
 
   @override
@@ -109,18 +102,16 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
           final categoryColors = {
             for (var cat in categories) cat.category: cat.colorFromString(),
           };
-
           return FutureBuilder<List<Expense>>(
-            future: _loadAllExpensesForUser(db, categories),
+            future: db.fetchAllExpenses(categories),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-
               final allExpenses = snapshot.data!;
               final filteredExpenses = filterExpenses(allExpenses, widget.durationType);
-              final totals = calculateTotalsByCategory(filteredExpenses);
-
+              final dataMap = aggregateExpensesByCategory(filteredExpenses);
+              final totals = dataMap.entries.toList();
               return Column(
                 children: [
                   SizedBox(
@@ -157,20 +148,5 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
         },
       ),
     );
-  }
-
-  /// Loads all expenses across all categories for the current user
-  Future<List<Expense>> _loadAllExpensesForUser(DatabaseService db, List<Category> categories) async {
-    List<Expense> all = [];
-
-    for (final cat in categories) {
-      final snapshot = await db.getExpensesForCategory(cat.id).first;
-      all.addAll(snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Expense.fromMap({...data, 'category': cat.category}, doc.id);
-      }));
-    }
-
-    return all;
   }
 }

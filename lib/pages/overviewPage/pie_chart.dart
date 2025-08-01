@@ -1,12 +1,18 @@
+import 'package:expenses_tracker/Classes/expense.dart';
+import 'package:expenses_tracker/services/database.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/Classes/expense.dart';
+import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
 
 class ExpensePieChart extends StatefulWidget {
   final List<Expense> expenses;
   final Map<String, Color> categoryColors;
 
-  const ExpensePieChart({required this.expenses, super.key, required this.categoryColors});
+  const ExpensePieChart({
+    required this.expenses,
+    super.key,
+    required this.categoryColors,
+  });
 
   @override
   State<ExpensePieChart> createState() => _ExpensePieChartState();
@@ -18,11 +24,13 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
   @override
   Widget build(BuildContext context) {
     final dataMap = aggregateExpensesByCategory(widget.expenses);
-    final total = dataMap.values.reduce((a, b) => a + b);
+    final total = dataMap.values.isNotEmpty ? dataMap.values.reduce((a, b) => a + b) : 0;
 
-    return total == 0
-        ? const Center(child: Text("No expenses yet"))
-        : Stack(
+    if (total == 0) {
+      return const Center(child: Text("No expenses yet"));
+    }
+
+    return Stack(
       children: [
         PieChart(
           PieChartData(
@@ -48,10 +56,10 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
             sectionsSpace: 2,
             pieTouchData: PieTouchData(
               enabled: true,
-              touchCallback: (FlTouchEvent e, PieTouchResponse? r) {
-                if (r != null && r.touchedSection != null) {
+              touchCallback: (event, response) {
+                if (response != null && response.touchedSection != null) {
                   setState(() {
-                    touchIndex = r.touchedSection!.touchedSectionIndex;
+                    touchIndex = response.touchedSection!.touchedSectionIndex;
                   });
                 } else {
                   setState(() {
@@ -77,17 +85,5 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
         ),
       ],
     );
-  }
-
-  Map<String, double> aggregateExpensesByCategory(List<Expense> expenses) {
-    final Map<String, double> dataMap = {};
-    for (var expense in expenses) {
-      if (dataMap.containsKey(expense.category)) {
-        dataMap[expense.category] = dataMap[expense.category]! + expense.amount;
-      } else {
-        dataMap[expense.category] = expense.amount.toDouble();
-      }
-    }
-    return dataMap;
   }
 }

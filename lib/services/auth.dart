@@ -1,5 +1,5 @@
+import 'package:expenses_tracker/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:expenses_tracker/Services/database.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;

@@ -1,7 +1,7 @@
+import 'package:expenses_tracker/services/firebase_options.dart';
 import 'package:expenses_tracker/widget_tree.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:expenses_tracker/Services/firebase_options.dart';
+import 'package:flutter/material.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

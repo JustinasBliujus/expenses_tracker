@@ -1,15 +1,15 @@
+import 'package:expenses_tracker/pages/manageCategoriesPage//text_input_with_two_buttons.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/navigation_drawer.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_header_text.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
+import 'package:expenses_tracker/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:expenses_tracker/services/auth.dart';
-import '../../Services/database.dart';
-import 'package:expenses_tracker/pages/ManageCategoriesPage//text_input_with_two_buttons.dart';
-import 'package:expenses_tracker/Pages/reusableWidgets/navigation_drawer.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 import '../../classes/category.dart';
+import '../../services/database.dart';
 
 class ManageCategories extends StatefulWidget {
   const ManageCategories({super.key});
@@ -32,73 +32,103 @@ class _ManageCategoriesState extends State<ManageCategories> {
     setState(() {
       pickerColor = color;
       selectedColor = pickerColor;
-      print(selectedColor);
       Navigator.of(context).pop();
     });
   }
+
   String colorToHexString(Color color) {
     return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
   }
-  Future<void> _deleteCategory(String categoryName) async {
-    final databaseService = DatabaseService(uid: Auth().currentUser!.uid);
-    try {
-      await databaseService.deleteCategoryByName(categoryName);
+
+  Future<void> mergeCategories() async {
+    final service = DatabaseService(uid: Auth().currentUser!.uid);
+
+    if(categoryToMergeFirst == null || categoryToMergeSecond == null){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Category "$categoryName" deleted'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Please select both categories to merge')),
       );
-    } catch (e) {
+    }
+    else if(categoryToMergeFirst == categoryToMergeSecond){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You cannot merge the same category')),
+      );
+    }
+    else{
+      try {
+        await service.mergeCategories(categoryToMergeFirst!, categoryToMergeSecond!);
+
+        setState(() {
+          categoryToMergeFirst = null;
+          categoryToMergeSecond = null;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Categories merged'), backgroundColor: Colors.green),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to merge categories: ${e.toString()}'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void addCategory(Map<String, dynamic> categoryColors) async {
+    if (textControl.text.isNotEmpty && selectedColor != null) {
+      final existingNames = categoryColors.keys.map((e) => e.toLowerCase()).toList();
+
+      if (existingNames.contains(textControl.text.toLowerCase())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Category name already exists'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      final categoryService = DatabaseService(uid: Auth().currentUser!.uid);
+
+      try {
+        await categoryService.addCategory(
+          textControl.text,
+          colorToHexString(selectedColor!),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Category added successfully'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        setState(() {
+          textControl.clear();
+          selectedColor = null;
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add category'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete category'),
-          backgroundColor: Colors.red,
+          content: Text('Please enter a name and select a color'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
         ),
       );
     }
   }
-  Future<void> mergeCategories(String fromCategory, String toCategory) async {
-    final db = DatabaseService(uid: Auth().currentUser!.uid);
-    try {
-      final fromSnapshot = await db.categoriesCollection
-          .where('category', isEqualTo: fromCategory)
-          .limit(1)
-          .get();
 
-      final toSnapshot = await db.categoriesCollection
-          .where('category', isEqualTo: toCategory)
-          .limit(1)
-          .get();
 
-      if (fromSnapshot.docs.isEmpty || toSnapshot.docs.isEmpty) {
-        throw Exception('One or both categories not found');
-      }
-
-      final fromRef = fromSnapshot.docs.first.reference;
-      final toRef = toSnapshot.docs.first.reference;
-
-      final expenses = await fromRef.collection('expenses').get();
-      for (final expenseDoc in expenses.docs) {
-        await toRef.collection('expenses').add(expenseDoc.data());
-        await expenseDoc.reference.delete(); // move
-      }
-      setState(() {
-        categoryToMergeFirst = null;
-        categoryToMergeSecond = null;
-      });
-      // Optional: delete the old category
-      await fromRef.delete();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Categories merged'), backgroundColor: Colors.green),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to merge categories'), backgroundColor: Colors.red),
-      );
-    }
-  }
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
@@ -153,59 +183,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                         ),
                       );
                     },
-                    onPressedSecond: () async {
-                      if (textControl.text.isNotEmpty && selectedColor != null) {
-                        final existingNames = categoryColors.keys.map((e) => e.toLowerCase()).toList();
-
-                        if (existingNames.contains(textControl.text.toLowerCase())) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Category name already exists'),
-                              backgroundColor: Colors.orange,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                          return;
-                        }
-
-                        try {
-                          await databaseService.addNewCategory(
-                            textControl.text,
-                            colorToHexString(selectedColor!),
-                          );
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Category added successfully'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-
-                          setState(() {
-                            textControl.clear();
-                            selectedColor = null;
-                          });
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Failed to add category'),
-                              backgroundColor: Colors.red,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Please enter a name and select a color'),
-                            backgroundColor: Colors.orange,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
-
+                    onPressedSecond: () => addCategory(categoryColors),
                     categoryColors: categoryColors,
                   ),
                   const StyledSizedBox(height: 60),
@@ -214,7 +192,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                   CategoryDropdown(
                     hint: "Category To Delete",
                     categoryColors: categoryColors,
-                    selectedValue: categoryToMergeFirst, // <-- ADD THIS
+                    selectedValue: categoryToMergeFirst,
                     onChanged: (value) {
                       setState(() {
                         categoryToMergeFirst = value;
@@ -229,7 +207,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                         child: CategoryDropdown(
                           hint: "Merge Into",
                           categoryColors: categoryColors,
-                          selectedValue: categoryToMergeSecond, // <-- ADD THIS
+                          selectedValue: categoryToMergeSecond,
                           onChanged: (value) {
                             setState(() {
                               categoryToMergeSecond = value;
@@ -242,19 +220,7 @@ class _ManageCategoriesState extends State<ManageCategories> {
                       StyledActionButton(
                         buttonColor: Colors.green,
                         onPressed: () {
-                          if(categoryToMergeFirst == categoryToMergeSecond){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('You cannot merge the same category')),
-                          );
-                          }
-                          else if (categoryToMergeFirst != null && categoryToMergeSecond != null) {
-                            mergeCategories(categoryToMergeFirst!, categoryToMergeSecond!);
-                          }
-                          else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please select both categories to merge')),
-                            );
-                          }
+                          mergeCategories();
                         },
                         buttonIcon: Icons.check,
                       )

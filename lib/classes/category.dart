@@ -8,7 +8,6 @@ class Category {
   Category({required this.id, required this.category, required this.colorHex});
 
   factory Category.fromMap(Map<String, dynamic> data, String documentId) {
-    print(data['color']);
     return Category(
       id: documentId,
       category: data['category'],

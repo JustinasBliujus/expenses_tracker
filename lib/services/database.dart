@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expenses_tracker/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:expenses_tracker/Services/auth.dart';
+
+import '../Classes/expense.dart';
 import '../classes/category.dart';
 
 class DatabaseService {
@@ -34,6 +36,39 @@ class DatabaseService {
       'category': category,
       'color': colorHex,
     });
+  }
+  Future<void> mergeCategories(String fromCategory, String toCategory) async {
+    final db = DatabaseService(uid: uid);
+
+    final fromSnapshot = await db.categoriesCollection
+        .where('category', isEqualTo: fromCategory)
+        .limit(1)
+        .get();
+
+    final toSnapshot = await db.categoriesCollection
+        .where('category', isEqualTo: toCategory)
+        .limit(1)
+        .get();
+
+    if (fromSnapshot.docs.isEmpty || toSnapshot.docs.isEmpty) {
+      throw Exception('One or both categories not found');
+    }
+
+    final fromRef = fromSnapshot.docs.first.reference;
+    final toRef = toSnapshot.docs.first.reference;
+
+    final expenses = await fromRef.collection('expenses').get();
+
+    for (final expenseDoc in expenses.docs) {
+      final expenseData = expenseDoc.data();
+
+      expenseData['category'] = toCategory;
+
+      await toRef.collection('expenses').add(expenseData);
+      await expenseDoc.reference.delete();
+    }
+
+    await fromRef.delete();
   }
 
   // Delete expense
@@ -116,6 +151,34 @@ class DatabaseService {
     }
   }
 
+  Future<List<Expense>> fetchAllExpenses(List<Category> categories) async {
+    final List<Expense> allExpenses = [];
+
+    for (final category in categories) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('categories')
+          .doc(category.id)
+          .collection('expenses')
+          .get();
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final expense = Expense.fromMap(data, doc.id);
+        allExpenses.add(expense);
+      }
+    }
+
+    return allExpenses;
+  }
+  static Map<String, double> aggregateExpensesByCategory(List<Expense> expenses) {
+    final Map<String, double> dataMap = {};
+    for (var expense in expenses) {
+      dataMap.update(expense.category, (value) => value + expense.amount, ifAbsent: () => expense.amount.toDouble());
+    }
+    return dataMap;
+  }
   // Delete category
   Future<void> deleteCategoryByName(String categoryName) async {
     final querySnapshot = await categoriesCollection

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
+import 'package:flutter/material.dart';
 
 class TextInputWithTwoButtons extends StatelessWidget {
   final String? dropdownHint;
