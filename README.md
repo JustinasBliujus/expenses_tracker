@@ -28,17 +28,29 @@ Code is located in the master branch.
 
 ## Screenshots
 
+### App Icon
+![Icon](screenshots/icon.png)
+![On The Screen](screenshots/1.png)
+![App Turning On](screenshots/2.png)
+
+### Overview Page without data
+![Overview](screenshots/3.png)
+
+### Login Page
+![Login](screenshots/10.png)
+
 ### Overview Page
-![Overview](screenshots/overview.png)
+![Overview](screenshots/8.png)
 
 ### History Page
-![History](screenshots/history.png)
+![History](screenshots/7.png)
 
 ### Categories Page
-![Categories](screenshots/categories.png)
+![Categories](screenshots/4.png)
+![Choosing Category Color](screenshots/5.png)
 
 ### Adding Expenses
-![Overview](screenshots/add_expense.png)
+![Overview](screenshots/6.png)
 
 ### Drawer
-![Drawer](screenshots/drawer.png)
+![Drawer](screenshots/9.png)
