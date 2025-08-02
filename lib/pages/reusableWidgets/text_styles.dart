@@ -22,4 +22,5 @@ class TextStyles {
     letterSpacing: 1.2,
   );
   static const TextStyle header = TextStyle(fontSize: 25);
+  static const TextStyle delete = TextStyle(color: AppColors.error);
 }

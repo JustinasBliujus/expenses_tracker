@@ -32,52 +32,62 @@ class _StyledPieChartState extends State<StyledPieChart> {
       return const Center(child: Text("No expenses yet"));
     }
 
-    return Stack(
-      children: [
-        PieChart(
-          PieChartData(
-            centerSpaceRadius: 105,
-            sections: dataMap.entries.map((entry) {
-              final index = dataMap.keys.toList().indexOf(entry.key);
-              final category = entry.key;
-              final amount = entry.value;
-              final percentage = (amount / total * 100).toStringAsFixed(1);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = constraints.biggest;
+        final minSide = size.shortestSide;
+        final chartRadius = minSide / 5.3;
+        final centerSpace = minSide / 3.5;
 
-              return PieChartSectionData(
-                color: widget.categoryColors[category] ??AppColors.unknown,
-                value: amount,
-                title: '$percentage%',
-                radius: touchIndex == index ? 70 : 60,
-                titleStyle: TextStyles.pieChartPercentage,
-              );
-            }).toList(),
-            sectionsSpace: 2,
-            pieTouchData: PieTouchData(
-              enabled: true,
-              touchCallback: (event, response) {
-                if (response != null && response.touchedSection != null) {
-                  setState(() {
-                    touchIndex = response.touchedSection!.touchedSectionIndex;
-                  });
-                } else {
-                  setState(() {
-                    touchIndex = null;
-                  });
-                }
-              },
+        return Stack(
+          children: [
+            PieChart(
+              PieChartData(
+                centerSpaceRadius: centerSpace,
+                sections: dataMap.entries.map((entry) {
+                  final index = dataMap.keys.toList().indexOf(entry.key);
+                  final category = entry.key;
+                  final amount = entry.value;
+                  final percentage = (amount / total * 100).toStringAsFixed(1);
+
+                  return PieChartSectionData(
+                    color: widget.categoryColors[category] ?? AppColors.unknown,
+                    value: amount,
+                    title: '$percentage%',
+                    radius: touchIndex == index ? chartRadius * 1.1 : chartRadius,
+                    titleStyle: TextStyles.pieChartPercentage,
+                  );
+                }).toList(),
+                sectionsSpace: 2,
+                pieTouchData: PieTouchData(
+                  enabled: true,
+                  touchCallback: (event, response) {
+                    if (response != null && response.touchedSection != null) {
+                      setState(() {
+                        touchIndex = response.touchedSection!.touchedSectionIndex;
+                      });
+                    } else {
+                      setState(() {
+                        touchIndex = null;
+                      });
+                    }
+                  },
+                ),
+              ),
+              duration: const Duration(milliseconds: 80),
             ),
-          ),
-          duration: const Duration(milliseconds: 80),
-        ),
-        Positioned.fill(
-          child: Center(
-            child: Text(
-              '\$${total.toStringAsFixed(2)}',
-              style: TextStyles.pieChartTotal,
+            Positioned.fill(
+              child: Center(
+                child: Text(
+                  '\$${total.toStringAsFixed(2)}',
+                  style: TextStyles.pieChartTotal,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

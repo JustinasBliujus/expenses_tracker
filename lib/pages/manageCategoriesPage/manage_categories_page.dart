@@ -160,79 +160,105 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
             drawer: const NavigationDrawerCustom(),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 85),
-                  const Text("Add New Category", style: TextStyles.header,),
-                  SizedBox(height: 15),
-                  TextInputWithTwoButtons(
-                    textFormFieldHint: 'Enter Category Name',
-                    buttonColorFirst: selectedColor ?? AppColors.unknown,
-                    buttonColorSecond: AppColors.affirmative,
-                    buttonIcon: Icons.check,
-                    controller: textControl,
-                    isTextFormField: true,
-                    onPressedFirst: () async {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Pick a color'),
-                          content: SingleChildScrollView(
-                            child: BlockPicker(
-                              pickerColor: selectedColor,
-                              onColorChanged: changeColor,
+              child: OrientationBuilder(
+                builder: (context, orientation) {
+                  bool isLandscape = orientation == Orientation.landscape;
+
+                  Widget addCategorySection = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(child: const Text("Add New Category", style: TextStyles.header)),
+                      const SizedBox(height: 15),
+                      TextInputWithTwoButtons(
+                        textFormFieldHint: 'Enter Category Name',
+                        buttonColorFirst: selectedColor ?? AppColors.unknown,
+                        buttonColorSecond: AppColors.affirmative,
+                        buttonIcon: Icons.check,
+                        controller: textControl,
+                        isTextFormField: true,
+                        onPressedFirst: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Pick a color'),
+                              content: SingleChildScrollView(
+                                child: BlockPicker(
+                                  pickerColor: selectedColor,
+                                  onColorChanged: changeColor,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        onPressedSecond: () => addCategory(categoryColors),
+                        categoryColors: categoryColors,
+                      ),
+                    ],
+                  );
+
+                  Widget mergeCategorySection = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(child: const Text("Merge Categories", style: TextStyles.header)),
+                      const StyledSizedBox(height: 15),
+                      CategoryDropdown(
+                        hint: "Category To Delete",
+                        categoryColors: categoryColors,
+                        selectedValue: categoryToMergeFirst,
+                        onChanged: (value) {
+                          setState(() {
+                            categoryToMergeFirst = value;
+                          });
+                        },
+                      ),
+                      const StyledSizedBox(height: 15),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CategoryDropdown(
+                              hint: "Merge Into",
+                              categoryColors: categoryColors,
+                              selectedValue: categoryToMergeSecond,
+                              onChanged: (value) {
+                                setState(() {
+                                  categoryToMergeSecond = value;
+                                });
+                              },
                             ),
                           ),
-                        ),
-                      );
-                    },
-                    onPressedSecond: () => addCategory(categoryColors),
-                    categoryColors: categoryColors,
-                  ),
-                  const StyledSizedBox(height: 60),
-                  const Text("Merge Categories",style: TextStyles.header,),
-                  const StyledSizedBox(height: 15),
-                  CategoryDropdown(
-                    hint: "Category To Delete",
-                    categoryColors: categoryColors,
-                    selectedValue: categoryToMergeFirst,
-                    onChanged: (value) {
-                      setState(() {
-                        categoryToMergeFirst = value;
-                      });
-                    },
-                  ),
-
-                  const StyledSizedBox(height: 15),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CategoryDropdown(
-                          hint: "Merge Into",
-                          categoryColors: categoryColors,
-                          selectedValue: categoryToMergeSecond,
-                          onChanged: (value) {
-                            setState(() {
-                              categoryToMergeSecond = value;
-                            });
-                          },
-                        ),
-
+                          const SizedBox(width: 8),
+                          StyledActionButton(
+                            buttonColor: AppColors.affirmative,
+                            onPressed: mergeCategories,
+                            buttonIcon: Icons.check,
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 8,),
-                      StyledActionButton(
-                        buttonColor: AppColors.affirmative,
-                        onPressed: () {
-                          mergeCategories();
-                        },
-                        buttonIcon: Icons.check,
-                      )
                     ],
-                  ),
-                ],
+                  );
+
+                  return isLandscape
+                      ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: addCategorySection),
+                      const SizedBox(width: 40),
+                      Expanded(child: mergeCategorySection),
+                    ],
+                  )
+                      : Column(
+                    children: [
+                      const SizedBox(height: 85),
+                      addCategorySection,
+                      const StyledSizedBox(height: 60),
+                      mergeCategorySection,
+                    ],
+                  );
+                },
               ),
             ),
           );
+
         },
       ),
     );

@@ -8,6 +8,7 @@ import '../../classes/category.dart';
 import '../../services/auth.dart';
 import '../../services/database.dart';
 import '../reusableWidgets/navigation_drawer.dart';
+import '../reusableWidgets/styled_circular_progress_indicator.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -57,7 +58,7 @@ class HistoryListView extends StatelessWidget {
       future: databaseService.fetchAllExpenses(categories),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: StyledCircularProgressIndicator());
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -91,7 +92,7 @@ class HistoryListView extends StatelessWidget {
               subtitle: Text(formatDate(expense.date),
                   style: TextStyles.small),
               trailing: Text('\$${expense.amount.toStringAsFixed(2)}'),
-              onLongPress: () => _showDeleteDialog(context, expense),
+              onLongPress: () => showDeleteDialog(context, expense),
             );
           },
         );
@@ -100,12 +101,12 @@ class HistoryListView extends StatelessWidget {
   }
 
 
-  void _showDeleteDialog(BuildContext context, Expense expense) {
+  void showDeleteDialog(BuildContext context, Expense expense) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Expense'),
+          title: const Text('Delete Expense',),
           content: const Text('Are you sure you want to delete this expense?'),
           actions: <Widget>[
             TextButton(
@@ -117,7 +118,7 @@ class HistoryListView extends StatelessWidget {
                   const SnackBar(content: Text('Expense deleted successfully'),backgroundColor: AppColors.affirmative),
                 );
               },
-              child: const Text('Delete'),
+              child: const Text('Delete', style: TextStyles.delete,),
             ),
           ],
         );

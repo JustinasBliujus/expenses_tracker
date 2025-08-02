@@ -11,6 +11,7 @@ import '../../helperFunctions/filter_expenses_by_period.dart';
 import '../addExpensePage/add_expense_page.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
+import '../reusableWidgets/styled_circular_progress_indicator.dart';
 
 class OverviewPageBody extends StatelessWidget {
   const OverviewPageBody({super.key});
@@ -87,7 +88,6 @@ class OverviewPageBody extends StatelessWidget {
   }
 }
 
-
 class TabBarViewPage extends StatefulWidget {
   final int durationType;
 
@@ -98,7 +98,6 @@ class TabBarViewPage extends StatefulWidget {
 }
 
 class _TabBarViewPageState extends State<TabBarViewPage> {
-
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
@@ -118,47 +117,88 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
             future: db.fetchAllExpenses(categories),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: StyledCircularProgressIndicator());
               }
+
               final allExpenses = snapshot.data!;
               final filteredExpenses = filterExpensesByPeriod(allExpenses, widget.durationType);
               final dataMap = aggregateExpensesByCategory(filteredExpenses);
-              final totals = dataMap.entries.toList();
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 400,
-                    child: filteredExpenses.isEmpty
-                        ? const Center(
-                      child: Text('No Expenses to Track Yet', style: TextStyles.dataMissing),
-                    )
-                        : StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: totals.length,
-                      itemBuilder: (context, index) {
-                        final entry = totals[index];
-                        final color = categoryColors[entry.key] ?? AppColors.unknown;
-                        return ListTile(
-                          leading: Container(
-                            width: 16,
-                            height: 16,
-                            color: color,
-                            margin: const EdgeInsets.only(right: 8),
-                          ),
-                          title: Text(entry.key),
-                          trailing: Text('\$${entry.value.toStringAsFixed(2)}'),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+
+              return ExpenseOverview(
+                filteredExpenses: filteredExpenses,
+                categoryColors: categoryColors,
+                dataMap: dataMap,
               );
             },
           );
         },
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⬇️ MODULARIZED WIDGET FOR PIE CHART + LIST VIEW + ORIENTATION HANDLING ⬇️
+// ─────────────────────────────────────────────────────────────────────────────
+
+class ExpenseOverview extends StatelessWidget {
+  final List<Expense> filteredExpenses;
+  final Map<String, Color> categoryColors;
+  final Map<String, double> dataMap;
+
+  const ExpenseOverview({
+    super.key,
+    required this.filteredExpenses,
+    required this.categoryColors,
+    required this.dataMap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final totals = dataMap.entries.toList();
+
+    final pieChartWidget = filteredExpenses.isEmpty
+        ? const Center(
+      child: Text('No Expenses to Track Yet', style: TextStyles.dataMissing),
+    )
+        : StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors);
+
+    final listViewWidget = ListView.builder(
+      itemCount: totals.length,
+      itemBuilder: (context, index) {
+        final entry = totals[index];
+        final color = categoryColors[entry.key] ?? AppColors.unknown;
+        return ListTile(
+          leading: Container(
+            width: 16,
+            height: 16,
+            color: color,
+            margin: const EdgeInsets.only(right: 8),
+          ),
+          title: Text(entry.key),
+          trailing: Text('\$${entry.value.toStringAsFixed(2)}'),
+        );
+      },
+    );
+
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        if (orientation == Orientation.portrait) {
+          return Column(
+            children: [
+              SizedBox(height: 400, child: pieChartWidget),
+              Expanded(child: listViewWidget),
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              Expanded(child: pieChartWidget),
+              Expanded(child: listViewWidget),
+            ],
+          );
+        }
+      },
     );
   }
 }

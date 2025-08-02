@@ -6,6 +6,7 @@ import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.da
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
@@ -29,8 +30,24 @@ class _AddExpenseState extends State<AddExpensePage> {
       initialDate: selectedDate,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.main,
+              onPrimary: AppColors.opposite,
+              onSurface: AppColors.main,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.main,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-
     if (pickedDate != null) {
       setState(() {
         selectedDate = DateTime(
@@ -45,10 +62,30 @@ class _AddExpenseState extends State<AddExpensePage> {
   }
 
   void selectTime(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
+    TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.main,
+              secondary: AppColors.main,
+              onSecondary: AppColors.opposite,
+              onPrimary: AppColors.opposite,
+              onSurface: AppColors.main,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.main,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
+
 
     if (pickedTime != null) {
       setState(() {
@@ -69,7 +106,9 @@ class _AddExpenseState extends State<AddExpensePage> {
 
     if (selectedCategory == null || amountText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'),backgroundColor: AppColors.suggestion),
+        const SnackBar(
+            content: Text('Please fill in all fields'),
+            backgroundColor: AppColors.suggestion),
       );
       return;
     }
@@ -88,11 +127,15 @@ class _AddExpenseState extends State<AddExpensePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully'),backgroundColor: AppColors.affirmative),
+        const SnackBar(
+            content: Text('Expense added successfully'),
+            backgroundColor: AppColors.affirmative),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}'),backgroundColor: AppColors.error),
+        SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: AppColors.error),
       );
     }
   }
@@ -123,14 +166,13 @@ class _AddExpenseState extends State<AddExpensePage> {
               for (var item in categories) item.category: item.colorFromString()
             };
 
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
+            return OrientationBuilder(
+              builder: (context, orientation) {
+                final bool isLandscape = orientation == Orientation.landscape;
+
+                Widget fieldInputSection = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const StyledSizedBox(height: 35),
-                    const Text("Add An Expense",style: TextStyles.header,),
-                    const StyledSizedBox(height: 25),
                     StyledTextFormField(
                       controller: amountController,
                       labelText: 'Enter Amount',
@@ -146,37 +188,85 @@ class _AddExpenseState extends State<AddExpensePage> {
                         });
                       },
                     ),
-                    const StyledSizedBox(height: 25),
-                    GestureDetector(
-                      onTap: () => selectDate(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Select Date',
-                          border: OutlineInputBorder(),
-                        ),
-                        child: Text("${selectedDate.toLocal()}".split(' ')[0]),
-                      ),
+                  ],
+                );
+                Widget timeSection = Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      DateFormat('MMM d, yyyy – hh:mm a').format(selectedDate),
+                      style: TextStyles.header,
                     ),
-                    const StyledSizedBox(height: 25),
-                    GestureDetector(
-                      onTap: () => selectTime(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Select Time',
-                          border: OutlineInputBorder(),
-                        ),
-                        child: Text(selectedTime.format(context)),
-                      ),
-                    ),
-                    const StyledSizedBox(height: 25),
-                    StyledActionButton(
-                      buttonColor: AppColors.affirmative,
-                      buttonIcon: Icons.check,
-                      onPressed: () => submitExpense(databaseService),
+                    StyledSizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        StyledActionButton(
+                            buttonColor: AppColors.main,
+                            buttonIcon: Icons.calendar_month,
+                            onPressed: () => selectDate(context)),
+                        const SizedBox(width: 15),
+                        StyledActionButton(
+                            buttonColor: AppColors.main,
+                            buttonIcon: Icons.watch_later_outlined,
+                            onPressed: () => selectTime(context)),
+                      ],
                     ),
                   ],
-                ),
-              ),
+                );
+
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: isLandscape
+                      ? Column(
+                          children: [
+                            Center(
+                                child: const Text("Add An Expense",
+                                    style: TextStyles.header)),
+                            StyledSizedBox(height: 20),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: fieldInputSection),
+                                const SizedBox(width: 20),
+                                Expanded(child: timeSection),
+                              ],
+                            ),
+                            StyledSizedBox(height: 40),
+                            Center(
+                              child: StyledActionButton(
+                                buttonColor: AppColors.affirmative,
+                                buttonIcon: Icons.check,
+                                onPressed: () => submitExpense(databaseService),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                  child: const Text("Add An Expense",
+                                      style: TextStyles.header)),
+                              const SizedBox(height: 25),
+                              fieldInputSection,
+                              StyledSizedBox(height: 30),
+                              timeSection,
+                              StyledSizedBox(height: 60),
+                              Center(
+                                child: StyledActionButton(
+                                  buttonColor: AppColors.affirmative,
+                                  buttonIcon: Icons.check,
+                                  onPressed: () =>
+                                      submitExpense(databaseService),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                );
+              },
             );
           },
         ),
