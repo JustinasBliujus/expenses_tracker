@@ -10,6 +10,7 @@ import '../../Classes/expense.dart';
 import '../../helperFunctions/filter_expenses_by_period.dart';
 import '../addExpensePage/add_expense_page.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
 
 class OverviewPageBody extends StatelessWidget {
   const OverviewPageBody({super.key});
@@ -129,7 +130,7 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
                     height: 400,
                     child: filteredExpenses.isEmpty
                         ? const Center(
-                      child: Text('No expenses to track yet.', style: TextStyle()),
+                      child: Text('No Expenses to Track Yet', style: TextStyles.dataMissing),
                     )
                         : StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors),
                   ),

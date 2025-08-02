@@ -91,7 +91,7 @@ class NavigationDrawerCustom extends StatelessWidget {
           ),
           const StyledSizedBox(height: 50),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: const Icon(Icons.settings,),
             title: const Text("Manage Categories"),
             onTap: () {
               Navigator.of(context).pushReplacement(

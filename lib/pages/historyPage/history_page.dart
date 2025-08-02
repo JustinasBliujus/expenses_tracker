@@ -50,7 +50,7 @@ class HistoryListView extends StatelessWidget {
     };
 
     if (categories.isEmpty) {
-      return const Center(child: Text('No History Found.',style: TextStyles.dataMissing,));
+      return const Center(child: Text('No History Found',style: TextStyles.dataMissing,));
     }
 
     return FutureBuilder<List<Expense>>(
