@@ -30,7 +30,11 @@ Code is located in the master branch.
 
 ### App Icon
 ![Icon](screenshots/icon.png)
+
+### App Icon on Screen
 ![On The Screen](screenshots/1.png)
+
+### App Icon while turning on
 ![App Turning On](screenshots/2.png)
 
 ### Overview Page without data
