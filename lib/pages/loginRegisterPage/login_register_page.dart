@@ -6,7 +6,7 @@ import 'package:expenses_tracker/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-
+import '../reusableWidgets/styled_circular_progress_indicator.dart';
 import '../reusableWidgets/text_styles.dart';
 
 class LoginRegister extends StatefulWidget {
@@ -19,48 +19,72 @@ class LoginRegister extends StatefulWidget {
 class _LoginRegisterState extends State<LoginRegister> {
   String? errorMessage = '';
   bool isLogin = true;
+  bool isLoading = false;
 
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final TextEditingController controllerEmail = TextEditingController();
+  final TextEditingController controllerPassword = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   Future<void> signInWithEmailAndPassword() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
       await Auth().signInWithEmailAndPassword(
-        email: _controllerEmail.text.trim(),
-        password: _controllerPassword.text.trim(),
-
+        email: controllerEmail.text.trim(),
+        password: controllerPassword.text.trim(),
       );
+      if (!mounted) return;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const MyApp()));
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
       });
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
   Future<void> createUserWithEmailAndPassword() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
       await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: controllerEmail.text.trim(),
+        password: controllerPassword.text.trim(),
       );
+      if (!mounted) return;
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const MyApp()));
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
       });
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
-  Widget _errorMessage() {
+  Widget errorMessageWidget() {
     return Text(
       errorMessage == '' ? '' : 'Error: $errorMessage',
       style: const TextStyle(color: AppColors.error),
     );
   }
 
-  Widget _hintText() {
+  Widget hintText() {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0),
       child: Text(
@@ -79,11 +103,12 @@ class _LoginRegisterState extends State<LoginRegister> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: isLoading ? Center(child: StyledCircularProgressIndicator())
+            :Column(
           children: [
-            const SizedBox(height: 80,),
+            const StyledSizedBox(height: 80,),
             Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -91,18 +116,18 @@ class _LoginRegisterState extends State<LoginRegister> {
                     child: Text("Login or Register",style: TextStyles.header,),
                   ),
                   const StyledSizedBox(height: 26),
-                  StyledTextFormField(controller: _controllerEmail, labelText: 'Email',),
+                  StyledTextFormField(controller: controllerEmail, labelText: 'Email',),
                   const SizedBox(height: 16),
-                  StyledTextFormField(controller: _controllerPassword,
+                  StyledTextFormField(controller: controllerPassword,
                       labelText: 'Password', isPassword: true),
                   const StyledSizedBox(height: 16),
-                  _errorMessage(),
+                  errorMessageWidget(),
                   const StyledSizedBox(height: 16),
                   StyledActionButton(
                     buttonText:isLogin ? 'Login' : 'Register',
                     buttonColor: AppColors.affirmative,
                     onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
+                      if (formKey.currentState?.validate() ?? false) {
                         isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
                       }
                     },),
@@ -110,11 +135,11 @@ class _LoginRegisterState extends State<LoginRegister> {
                   StyledActionButton(buttonText:isLogin ? 'Register instead' : 'Login instead',
                     buttonColor: AppColors.affirmative,
                     onPressed: () {
-                    setState(() {
-                      isLogin = !isLogin;
-                    });
-                  },),
-                  _hintText(),
+                      setState(() {
+                        isLogin = !isLogin;
+                      });
+                    },),
+                  hintText(),
                 ],
               ),
             ),
