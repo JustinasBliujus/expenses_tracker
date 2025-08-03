@@ -1,15 +1,13 @@
 import 'package:expenses_tracker/classes/category.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/category_dropdown.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
+import 'package:expenses_tracker/pages/addExpensePage/submit_expense.dart';
+import 'package:expenses_tracker/pages/addExpensePage/time_section_widget.dart';
+import 'package:expenses_tracker/pages/overviewPage/overview_page.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
+import 'field_input_section_widget.dart';
 
 class AddExpensePage extends StatefulWidget {
   const AddExpensePage({super.key});
@@ -85,8 +83,6 @@ class _AddExpenseState extends State<AddExpensePage> {
         );
       },
     );
-
-
     if (pickedTime != null) {
       setState(() {
         selectedTime = pickedTime;
@@ -98,45 +94,6 @@ class _AddExpenseState extends State<AddExpensePage> {
           pickedTime.minute,
         );
       });
-    }
-  }
-
-  Future<void> submitExpense(DatabaseService databaseService) async {
-    final amountText = amountController.text.trim();
-
-    if (selectedCategory == null || amountText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please fill in all fields'),
-            backgroundColor: AppColors.suggestion),
-      );
-      return;
-    }
-
-    try {
-      final amount = double.parse(amountText);
-      await databaseService.addExpenseToCategory(
-        selectedDate,
-        amount,
-        selectedCategory!,
-      );
-
-      amountController.clear();
-      setState(() {
-        selectedCategory = null;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Expense added successfully'),
-            backgroundColor: AppColors.affirmative),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppColors.error),
-      );
     }
   }
 
@@ -154,7 +111,9 @@ class _AddExpenseState extends State<AddExpensePage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const OverviewPage()),
+          ),
         ),
       ),
       body: StreamProvider<List<Category>>.value(
@@ -170,51 +129,6 @@ class _AddExpenseState extends State<AddExpensePage> {
             return OrientationBuilder(
               builder: (context, orientation) {
                 final bool isLandscape = orientation == Orientation.landscape;
-                Widget fieldInputSection = Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    StyledTextFormField(
-                      controller: amountController,
-                      labelText: 'Enter Amount',
-                      keyboardType: TextInputType.number,
-                    ),
-                    const StyledSizedBox(height: 25),
-                    CategoryDropdown(
-                      hint: 'Select Category',
-                      categoryColors: categoryColors,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value;
-                        });
-                      },
-                    ),
-                  ],
-                );
-                Widget timeSection = Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      DateFormat('MMM d, yyyy – hh:mm a').format(selectedDate),
-                      style: TextStyles.header,
-                    ),
-                    StyledSizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        StyledActionButton(
-                            buttonColor: AppColors.main,
-                            buttonIcon: Icons.calendar_month,
-                            onPressed: () => selectDate(context)),
-                        const SizedBox(width: 15),
-                        StyledActionButton(
-                            buttonColor: AppColors.main,
-                            buttonIcon: Icons.watch_later_outlined,
-                            onPressed: () => selectTime(context)),
-                      ],
-                    ),
-                  ],
-                );
-
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: isLandscape
@@ -229,9 +143,21 @@ class _AddExpenseState extends State<AddExpensePage> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(child: fieldInputSection),
+                                  Expanded(child: FieldInputSection(
+                                    amountController: amountController,
+                                    categoryColors: categoryColors,
+                                    onCategoryChanged: (value) {
+                                      setState(() {
+                                        selectedCategory = value;
+                                      });
+                                    },
+                                  ),),
                                   const SizedBox(width: 20),
-                                  Expanded(child: timeSection),
+                                  Expanded(child: TimeSection(
+                                    selectedDate: selectedDate,
+                                    selectDate: selectDate,
+                                    selectTime: selectTime,
+                                  ),),
                                 ],
                               ),
                               StyledSizedBox(height: 20),
@@ -239,7 +165,19 @@ class _AddExpenseState extends State<AddExpensePage> {
                                 child: StyledActionButton(
                                   buttonColor: AppColors.affirmative,
                                   buttonIcon: Icons.check,
-                                  onPressed: () => submitExpense(databaseService),
+                                  onPressed: () => submitExpense(
+                                      databaseService,
+                                    amountController,
+                                    context,
+                                    selectedDate,
+                                    selectedTime,
+                                    selectedCategory,
+                                      () {
+                                        setState(() {
+                                          amountController.clear();
+                                        });
+                                      }
+                                  ),
                                 ),
                               ),
                             ],
@@ -253,16 +191,40 @@ class _AddExpenseState extends State<AddExpensePage> {
                                   child: const Text("Add An Expense",
                                       style: TextStyles.header)),
                               const SizedBox(height: 25),
-                              fieldInputSection,
+                              FieldInputSection(
+                                amountController: amountController,
+                                categoryColors: categoryColors,
+                                onCategoryChanged: (value) {
+                                  setState(() {
+                                    selectedCategory = value;
+                                  });
+                                },
+                              ),
                               StyledSizedBox(height: 30),
-                              timeSection,
+                              TimeSection(
+                                selectedDate: selectedDate,
+                                selectDate: selectDate,
+                                selectTime: selectTime,
+                              ),
                               StyledSizedBox(height: 60),
                               Center(
                                 child: StyledActionButton(
                                   buttonColor: AppColors.affirmative,
                                   buttonIcon: Icons.check,
                                   onPressed: () =>
-                                      submitExpense(databaseService),
+                                      submitExpense(
+                                          databaseService,
+                                          amountController,
+                                          context,
+                                          selectedDate,
+                                          selectedTime,
+                                          selectedCategory,
+                                              () {
+                                            setState(() {
+                                              amountController.clear();
+                                            });
+                                          }
+                                      ),
                                 ),
                               ),
                             ],

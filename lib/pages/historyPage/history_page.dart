@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
 import '../../Classes/expense.dart';
 import '../../classes/category.dart';
 import '../../services/auth.dart';
 import '../../services/database.dart';
-import '../reusableWidgets/navigation_drawer.dart';
-import '../reusableWidgets/styled_circular_progress_indicator.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -38,8 +35,14 @@ class HistoryPage extends StatelessWidget {
   }
 }
 
-class HistoryListView extends StatelessWidget {
+class HistoryListView extends StatefulWidget {
   const HistoryListView({super.key});
+
+  @override
+  State<HistoryListView> createState() => _HistoryListViewState();
+}
+
+class _HistoryListViewState extends State<HistoryListView> {
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +103,6 @@ class HistoryListView extends StatelessWidget {
     );
   }
 
-
   void showDeleteDialog(BuildContext context, Expense expense) {
     showDialog(
       context: context,
@@ -115,8 +117,14 @@ class HistoryListView extends StatelessWidget {
                 await db.deleteExpenseFromCategory(expense.category, expense.id);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Expense deleted successfully'),backgroundColor: AppColors.affirmative),
+                  SnackBar(
+                      duration: AppConstants.snackBarDuration,
+                      content: Text('Expense deleted successfully'),
+                      backgroundColor: AppColors.affirmative),
                 );
+                setState(() {
+
+                });
               },
               child: const Text('Delete', style: TextStyles.delete,),
             ),

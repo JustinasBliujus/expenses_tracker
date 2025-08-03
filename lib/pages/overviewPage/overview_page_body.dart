@@ -9,13 +9,16 @@ import 'package:provider/provider.dart';
 import '../../Classes/expense.dart';
 import '../../helperFunctions/filter_expenses_by_period.dart';
 import '../addExpensePage/add_expense_page.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
-import '../reusableWidgets/styled_circular_progress_indicator.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
-class OverviewPageBody extends StatelessWidget {
+class OverviewPageBody extends StatefulWidget {
   const OverviewPageBody({super.key});
 
+  @override
+  State<OverviewPageBody> createState() => _OverviewPageBodyState();
+}
+
+class _OverviewPageBodyState extends State<OverviewPageBody> {
   @override
   Widget build(BuildContext context) {
     final user = Auth().currentUser;
@@ -63,14 +66,14 @@ class OverviewPageBody extends StatelessWidget {
               foregroundColor: AppColors.opposite,
               onPressed: () {
                 if (hasCategories) {
-                  Navigator.of(context).push(
+                  Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const AddExpensePage()),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
+                      duration: AppConstants.snackBarDuration,
                       content: Text("Please add a category first."),
-                      duration: Duration(seconds: 2),
                       backgroundColor: AppColors.suggestion,
                     ),
                   );

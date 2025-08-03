@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
+import 'package:expenses_tracker/pages/reusable/constants/app_colors.dart';
 
 class StyledActionButton extends StatelessWidget {
   final Color buttonColor;

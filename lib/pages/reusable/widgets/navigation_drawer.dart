@@ -2,12 +2,14 @@ import 'package:expenses_tracker/pages/historyPage/history_page.dart';
 import 'package:expenses_tracker/pages/loginRegisterPage/login_register_page.dart';
 import 'package:expenses_tracker/pages/manageCategoriesPage/manage_categories_page.dart';
 import 'package:expenses_tracker/pages/overviewPage/overview_page.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
+import 'package:expenses_tracker/pages/reusable/widgets/styled_sized_box.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_horizontal_divider.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/text_styles.dart';
+import 'package:expenses_tracker/pages/reusable/widgets/styled_horizontal_divider.dart';
+import 'package:expenses_tracker/pages/reusable/constants/app_colors.dart';
+import 'package:expenses_tracker/pages/reusable/constants/text_styles.dart';
+
+import '../constants/app_constants.dart';
 
 class NavigationDrawerCustom extends StatelessWidget {
   const NavigationDrawerCustom({super.key});
@@ -21,7 +23,11 @@ class NavigationDrawerCustom extends StatelessWidget {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $e')),
+        SnackBar(
+            duration: AppConstants.snackBarDuration,
+            content: Text('Error signing out: $e'),
+            backgroundColor: AppColors.error,
+        ),
       );
     }
   }

@@ -1,13 +1,8 @@
 import 'package:expenses_tracker/main.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_action_button.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_sized_box.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/styled_text_form_field.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-import '../reusableWidgets/styled_circular_progress_indicator.dart';
-import '../reusableWidgets/text_styles.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
 class LoginRegister extends StatefulWidget {
   const LoginRegister({super.key});

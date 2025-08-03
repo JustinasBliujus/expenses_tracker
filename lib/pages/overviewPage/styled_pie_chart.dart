@@ -2,9 +2,7 @@ import 'package:expenses_tracker/Classes/expense.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/helperFunctions/aggregate_expenses_by_category.dart';
-import 'package:expenses_tracker/pages/reusableWidgets/app_colors.dart';
-
-import '../reusableWidgets/text_styles.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
 class StyledPieChart extends StatefulWidget {
   final List<Expense> expenses;
