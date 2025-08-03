@@ -239,14 +239,17 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                   );
 
                   return isLandscape
-                      ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: addCategorySection),
-                      const SizedBox(width: 40),
-                      Expanded(child: mergeCategorySection),
-                    ],
-                  )
+                      ? Padding(
+                        padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                        child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                        Expanded(child: addCategorySection),
+                        const SizedBox(width: 40),
+                        Expanded(child: mergeCategorySection),
+                                            ],
+                                          ),
+                      )
                       : Column(
                     children: [
                       const SizedBox(height: 85),

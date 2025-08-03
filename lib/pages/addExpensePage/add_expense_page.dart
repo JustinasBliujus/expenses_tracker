@@ -218,30 +218,33 @@ class _AddExpenseState extends State<AddExpensePage> {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: isLandscape
-                      ? Column(
-                          children: [
-                            Center(
-                                child: const Text("Add An Expense",
-                                    style: TextStyles.header)),
-                            StyledSizedBox(height: 20),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: fieldInputSection),
-                                const SizedBox(width: 20),
-                                Expanded(child: timeSection),
-                              ],
-                            ),
-                            StyledSizedBox(height: 40),
-                            Center(
-                              child: StyledActionButton(
-                                buttonColor: AppColors.affirmative,
-                                buttonIcon: Icons.check,
-                                onPressed: () => submitExpense(databaseService),
+                      ? Padding(
+                        padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                        child: Column(
+                            children: [
+                              Center(
+                                  child: const Text("Add An Expense",
+                                      style: TextStyles.header)),
+                              StyledSizedBox(height: 20),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(child: fieldInputSection),
+                                  const SizedBox(width: 20),
+                                  Expanded(child: timeSection),
+                                ],
                               ),
-                            ),
-                          ],
-                        )
+                              StyledSizedBox(height: 20),
+                              Center(
+                                child: StyledActionButton(
+                                  buttonColor: AppColors.affirmative,
+                                  buttonIcon: Icons.check,
+                                  onPressed: () => submitExpense(databaseService),
+                                ),
+                              ),
+                            ],
+                          ),
+                      )
                       : SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

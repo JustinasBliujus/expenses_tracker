@@ -137,10 +137,6 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⬇️ MODULARIZED WIDGET FOR PIE CHART + LIST VIEW + ORIENTATION HANDLING ⬇️
-// ─────────────────────────────────────────────────────────────────────────────
-
 class ExpenseOverview extends StatelessWidget {
   final List<Expense> filteredExpenses;
   final Map<String, Color> categoryColors;
@@ -157,11 +153,9 @@ class ExpenseOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     final totals = dataMap.entries.toList();
 
-    final pieChartWidget = filteredExpenses.isEmpty
-        ? const Center(
-      child: Text('No Expenses to Track Yet', style: TextStyles.dataMissing),
-    )
-        : StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors);
+    final bool noExpenses = filteredExpenses.isEmpty;
+
+    final pieChartWidget = StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors);
 
     final listViewWidget = ListView.builder(
       itemCount: totals.length,
@@ -183,6 +177,16 @@ class ExpenseOverview extends StatelessWidget {
 
     return OrientationBuilder(
       builder: (context, orientation) {
+        if (noExpenses) {
+          return Center(
+            child: Text(
+              'No Expenses to Track Yet',
+              style: TextStyles.dataMissing,
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
         if (orientation == Orientation.portrait) {
           return Column(
             children: [
@@ -201,4 +205,5 @@ class ExpenseOverview extends StatelessWidget {
       },
     );
   }
+
 }
