@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../constants/app_colors.dart';
+import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
 class StyledCircularProgressIndicator extends StatelessWidget {
   const StyledCircularProgressIndicator({super.key});

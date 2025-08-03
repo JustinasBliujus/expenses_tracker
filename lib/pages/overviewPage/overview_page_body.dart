@@ -64,6 +64,9 @@ class _OverviewPageBodyState extends State<OverviewPageBody> {
             floatingActionButton: FloatingActionButton(
               backgroundColor: hasCategories ? AppColors.affirmative : AppColors.unknown,
               foregroundColor: AppColors.opposite,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               onPressed: () {
                 if (hasCategories) {
                   Navigator.of(context).pushReplacement(

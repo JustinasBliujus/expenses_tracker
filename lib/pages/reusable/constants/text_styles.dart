@@ -23,4 +23,5 @@ class TextStyles {
   );
   static const TextStyle header = TextStyle(fontSize: 25);
   static const TextStyle delete = TextStyle(color: AppColors.error);
+  static const TextStyle black = TextStyle(color: AppColors.main);
 }

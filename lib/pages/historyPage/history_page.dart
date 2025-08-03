@@ -48,6 +48,9 @@ class _HistoryListViewState extends State<HistoryListView> {
   Widget build(BuildContext context) {
     final categories = Provider.of<List<Category>>(context);
     final databaseService = DatabaseService(uid: Auth().currentUser!.uid);
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    double lPadding = isPortrait ? 0 : 70;
+    double rPadding = lPadding;
 
     final categoryColors = {
       for (var cat in categories) cat.category: cat.colorFromString()
@@ -78,26 +81,29 @@ class _HistoryListViewState extends State<HistoryListView> {
           return formatter.format(date);
         }
 
-        return ListView.builder(
-          itemCount: expenses.length,
-          itemBuilder: (context, index) {
-            final expense = expenses[index];
-            final color = categoryColors[expense.category] ?? AppColors.unknown;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(lPadding,0,rPadding,0),
+          child: ListView.builder(
+            itemCount: expenses.length,
+            itemBuilder: (context, index) {
+              final expense = expenses[index];
+              final color = categoryColors[expense.category] ?? AppColors.unknown;
 
-            return ListTile(
-              leading: Container(
-                width: 16,
-                height: 16,
-                color: color,
-                margin: const EdgeInsets.only(right: 8),
-              ),
-              title: Text(expense.category),
-              subtitle: Text(formatDate(expense.date),
-                  style: TextStyles.small),
-              trailing: Text('\$${expense.amount.toStringAsFixed(2)}'),
-              onLongPress: () => showDeleteDialog(context, expense),
-            );
-          },
+              return ListTile(
+                leading: Container(
+                  width: 16,
+                  height: 16,
+                  color: color,
+                  margin: const EdgeInsets.only(right: 8),
+                ),
+                title: Text(expense.category),
+                subtitle: Text(formatDate(expense.date),
+                    style: TextStyles.small),
+                trailing: Text('\$${expense.amount.toStringAsFixed(2)}'),
+                onLongPress: () => showDeleteDialog(context, expense),
+              );
+            },
+          ),
         );
       },
     );
@@ -111,7 +117,7 @@ class _HistoryListViewState extends State<HistoryListView> {
           title: const Text('Delete Expense',),
           content: const Text('Are you sure you want to delete this expense?'),
           actions: <Widget>[
-            TextButton(
+            StyledActionButton(
               onPressed: () async {
                 final db = DatabaseService(uid: Auth().currentUser!.uid);
                 await db.deleteExpenseFromCategory(expense.category, expense.id);
@@ -126,7 +132,8 @@ class _HistoryListViewState extends State<HistoryListView> {
 
                 });
               },
-              child: const Text('Delete', style: TextStyles.delete,),
+              buttonColor: AppColors.error,
+              buttonText: "Yes",
             ),
           ],
         );
