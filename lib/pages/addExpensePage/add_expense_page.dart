@@ -150,6 +150,7 @@ class _AddExpenseState extends State<AddExpensePage> {
     final databaseService = DatabaseService(uid: user.uid);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -169,7 +170,6 @@ class _AddExpenseState extends State<AddExpensePage> {
             return OrientationBuilder(
               builder: (context, orientation) {
                 final bool isLandscape = orientation == Orientation.landscape;
-
                 Widget fieldInputSection = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

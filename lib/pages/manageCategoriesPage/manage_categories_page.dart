@@ -156,6 +156,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
             for (var item in categories) item.category: item.colorFromString()
           };
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(),
             drawer: const NavigationDrawerCustom(),
             body: Padding(
