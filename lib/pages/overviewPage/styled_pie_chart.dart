@@ -53,7 +53,6 @@ class _StyledPieChartState extends State<StyledPieChart> {
 
                   final percentage =
                       '${(amount / total * 100).toStringAsFixed(1)}%';
-                  final digitCountPercentage = percentage.length;
 
                   return PieChartSectionData(
                     color: widget.categoryColors[category] ?? AppColors.unknown,

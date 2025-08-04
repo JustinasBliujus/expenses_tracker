@@ -1,5 +1,5 @@
 import 'package:expenses_tracker/pages/loginRegisterPage/login_register_page.dart';
-import 'package:expenses_tracker/pages/overviewPage/overview_page.dart';
+import 'package:expenses_tracker/category_stream_provider.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             ),
           );
         } else if (snapshot.hasData) {
-          return const OverviewPage();
+          return const CategoryStreamProvider();
         } else {
           return const LoginRegister();
         }
