@@ -18,7 +18,6 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
   final TextEditingController textControl = TextEditingController();
   String? selectedCategoryFrom;
   String? selectedCategoryTo;
-  Color pickerColor = AppColors.affirmative;
   Color? selectedColor;
   String? categoryToDelete;
   String? categoryToMergeFirst;
@@ -26,8 +25,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
 
   void changeColor(Color color) {
     setState(() {
-      pickerColor = color;
-      selectedColor = pickerColor;
+      selectedColor = color;
     });
   }
 
@@ -58,7 +56,6 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                           Expanded(child: AddCategorySection(
                             categoryColors: categoryColors,
                             textControl: textControl,
-                            selectedColor: selectedColor,
                             changeColor: changeColor,
                             addCategory: addCategory,
                           ),),
@@ -76,7 +73,6 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                           AddCategorySection(
                             categoryColors: categoryColors,
                             textControl: textControl,
-                            selectedColor: selectedColor,
                             changeColor: changeColor,
                             addCategory: addCategory,
                           ),

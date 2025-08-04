@@ -2,16 +2,17 @@ import '../Classes/expense.dart';
 
 List<Expense> filterExpensesByPeriod(List<Expense> expenses, int durationType) {
   final now = DateTime.now();
+  final startOfDay = DateTime(now.year, now.month, now.day);
   DateTime startDate;
   DateTime endDate;
 
   switch (durationType) {
     case 1: //daily
-      startDate = DateTime(now.year, now.month, now.day);
+      startDate = startOfDay;
       endDate = startDate.add(const Duration(days: 1));
       break;
     case 2: //weekly
-      startDate = now.subtract(Duration(days: now.weekday - 1)); // Monday
+      startDate = startOfDay.subtract(Duration(days: now.weekday - 1)); // Monday
       endDate = startDate.add(const Duration(days: 7));
       break;
     case 3: //monthly

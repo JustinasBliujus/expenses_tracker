@@ -6,7 +6,6 @@ import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 class AddCategorySection extends StatefulWidget {
   final Map<String, Color> categoryColors;
   final TextEditingController textControl;
-  final Color? selectedColor;
   final void Function(Color) changeColor;
   final void Function(
       Map<String, Color>,
@@ -20,7 +19,6 @@ class AddCategorySection extends StatefulWidget {
     super.key,
     required this.categoryColors,
     required this.textControl,
-    required this.selectedColor,
     required this.changeColor,
     required this.addCategory,
   });
@@ -30,6 +28,8 @@ class AddCategorySection extends StatefulWidget {
 }
 
 class _AddCategorySectionState extends State<AddCategorySection> {
+  Color? selectedColor = AppColors.unknown;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -41,7 +41,7 @@ class _AddCategorySectionState extends State<AddCategorySection> {
         const SizedBox(height: 15),
         TextInputWithTwoButtons(
           textFormFieldHint: 'Enter Category Name',
-          buttonColorFirst: widget.selectedColor ?? AppColors.unknown,
+          buttonColorFirst: selectedColor ?? AppColors.unknown,
           buttonColorSecond: AppColors.affirmative,
           buttonIcon: Icons.check,
           controller: widget.textControl,
@@ -53,8 +53,13 @@ class _AddCategorySectionState extends State<AddCategorySection> {
                 title: const Text('Pick a color'),
                 content: SingleChildScrollView(
                   child: BlockPicker(
-                    pickerColor: widget.selectedColor ?? Colors.grey,
-                    onColorChanged: widget.changeColor,
+                    pickerColor: selectedColor ?? AppColors.unknown,
+                    onColorChanged: (color) {
+                      setState(() {
+                        selectedColor = color;
+                      });
+                      widget.changeColor(color);
+                    },
                   ),
                 ),
               ),
@@ -65,10 +70,11 @@ class _AddCategorySectionState extends State<AddCategorySection> {
               widget.categoryColors,
               context,
               widget.textControl,
-              widget.selectedColor,
+              selectedColor,
                   () {
                 setState(() {
                   widget.textControl.clear();
+                  selectedColor = AppColors.unknown;
                 });
               },
             );

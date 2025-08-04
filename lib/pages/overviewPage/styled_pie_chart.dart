@@ -29,7 +29,7 @@ class _StyledPieChartState extends State<StyledPieChart> {
         : 0;
 
     if (total == 0) {
-      return const Center(child: Text("No expenses yet"));
+      return const Center(child: Text("No expenses yet",style: TextStyles.dataMissing,));
     }
 
     return LayoutBuilder(

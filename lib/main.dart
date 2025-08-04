@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     Get.put(NetworkController());
     return const GetMaterialApp(
-      title: 'Expenses Tracker',
+      title: 'eTracker',
       home: WidgetTree(),
     );
   }
