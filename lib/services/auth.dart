@@ -37,6 +37,7 @@ class Auth {
       }
     } on FirebaseAuthException catch (e) {
       print("Register error: ${e.code} - ${e.message}");
+      rethrow;
     }
   }
 
