@@ -116,125 +116,120 @@ class _AddExpenseState extends State<AddExpensePage> {
           ),
         ),
       ),
-      body: StreamProvider<List<Category>>.value(
-        initialData: const [],
-        value: databaseService.categories,
-        catchError: (_, __) => [],
-        child: Consumer<List<Category>>(
-          builder: (context, categories, child) {
-            final categoryColors = {
-              for (var item in categories) item.category: item.colorFromString()
-            };
+      body: Consumer<List<Category>>(
+        builder: (context, categories, child) {
+          final categoryColors = {
+            for (var item in categories) item.category: item.colorFromString()
+          };
 
-            return OrientationBuilder(
-              builder: (context, orientation) {
-                final bool isLandscape = orientation == Orientation.landscape;
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: isLandscape
-                      ? Padding(
-                        padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
-                        child: Column(
-                            children: [
-                              Center(
-                                  child: const Text("Add An Expense",
-                                      style: TextStyles.header)),
-                              StyledSizedBox(height: 20),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(child: FieldInputSection(
-                                    amountController: amountController,
-                                    categoryColors: categoryColors,
-                                    onCategoryChanged: (value) {
+          return OrientationBuilder(
+            builder: (context, orientation) {
+              final bool isLandscape = orientation == Orientation.landscape;
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: isLandscape
+                    ? Padding(
+                      padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                      child: Column(
+                          children: [
+                            Center(
+                                child: const Text("Add An Expense",
+                                    style: TextStyles.header)),
+                            StyledSizedBox(height: 20),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: FieldInputSection(
+                                  amountController: amountController,
+                                  categoryColors: categoryColors,
+                                  onCategoryChanged: (value) {
+                                    setState(() {
+                                      selectedCategory = value;
+                                    });
+                                  },
+                                ),),
+                                const SizedBox(width: 20),
+                                Expanded(child: TimeSection(
+                                  selectedDate: selectedDate,
+                                  selectDate: selectDate,
+                                  selectTime: selectTime,
+                                ),),
+                              ],
+                            ),
+                            StyledSizedBox(height: 20),
+                            Center(
+                              child: StyledActionButton(
+                                buttonColor: AppColors.affirmative,
+                                buttonIcon: Icons.check,
+                                onPressed: () => submitExpense(
+                                    databaseService,
+                                  amountController,
+                                  context,
+                                  selectedDate,
+                                  selectedTime,
+                                  selectedCategory,
+                                    () {
                                       setState(() {
-                                        selectedCategory = value;
+                                        amountController.clear();
                                       });
-                                    },
-                                  ),),
-                                  const SizedBox(width: 20),
-                                  Expanded(child: TimeSection(
-                                    selectedDate: selectedDate,
-                                    selectDate: selectDate,
-                                    selectTime: selectTime,
-                                  ),),
-                                ],
-                              ),
-                              StyledSizedBox(height: 20),
-                              Center(
-                                child: StyledActionButton(
-                                  buttonColor: AppColors.affirmative,
-                                  buttonIcon: Icons.check,
-                                  onPressed: () => submitExpense(
-                                      databaseService,
-                                    amountController,
-                                    context,
-                                    selectedDate,
-                                    selectedTime,
-                                    selectedCategory,
-                                      () {
-                                        setState(() {
-                                          amountController.clear();
-                                        });
-                                      }
-                                  ),
+                                    }
                                 ),
                               ),
-                            ],
-                          ),
-                      )
-                      : SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                  child: const Text("Add An Expense",
-                                      style: TextStyles.header)),
-                              const SizedBox(height: 25),
-                              FieldInputSection(
-                                amountController: amountController,
-                                categoryColors: categoryColors,
-                                onCategoryChanged: (value) {
-                                  setState(() {
-                                    selectedCategory = value;
-                                  });
-                                },
-                              ),
-                              StyledSizedBox(height: 30),
-                              TimeSection(
-                                selectedDate: selectedDate,
-                                selectDate: selectDate,
-                                selectTime: selectTime,
-                              ),
-                              StyledSizedBox(height: 60),
-                              Center(
-                                child: StyledActionButton(
-                                  buttonColor: AppColors.affirmative,
-                                  buttonIcon: Icons.check,
-                                  onPressed: () =>
-                                      submitExpense(
-                                          databaseService,
-                                          amountController,
-                                          context,
-                                          selectedDate,
-                                          selectedTime,
-                                          selectedCategory,
-                                              () {
-                                            setState(() {
-                                              amountController.clear();
-                                            });
-                                          }
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                );
-              },
-            );
-          },
-        ),
+                    )
+                    : SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                                child: const Text("Add An Expense",
+                                    style: TextStyles.header)),
+                            const SizedBox(height: 25),
+                            FieldInputSection(
+                              amountController: amountController,
+                              categoryColors: categoryColors,
+                              onCategoryChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value;
+                                });
+                              },
+                            ),
+                            StyledSizedBox(height: 30),
+                            TimeSection(
+                              selectedDate: selectedDate,
+                              selectDate: selectDate,
+                              selectTime: selectTime,
+                            ),
+                            StyledSizedBox(height: 60),
+                            Center(
+                              child: StyledActionButton(
+                                buttonColor: AppColors.affirmative,
+                                buttonIcon: Icons.check,
+                                onPressed: () =>
+                                    submitExpense(
+                                        databaseService,
+                                        amountController,
+                                        context,
+                                        selectedDate,
+                                        selectedTime,
+                                        selectedCategory,
+                                            () {
+                                          setState(() {
+                                            amountController.clear();
+                                          });
+                                        }
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              );
+            },
+          );
+        },
       ),
     );
   }

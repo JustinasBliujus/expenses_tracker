@@ -5,11 +5,6 @@ class TextStyles {
 
   static const TextStyle dataMissing = TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
   static const TextStyle small = TextStyle(fontSize: 12);
-  static const TextStyle pieChartPercentage = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-    color: AppColors.opposite,
-  );
   static const TextStyle pieChartTotal = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,

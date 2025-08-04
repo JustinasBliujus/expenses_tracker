@@ -36,7 +36,8 @@ class _StyledPieChartState extends State<StyledPieChart> {
         final minSide = size.shortestSide;
         final chartRadius = minSide / 5.3;
         final centerSpace = minSide / 3.5;
-
+        final fontSizeCenter = centerSpace/3;
+        final fontSizeRadius = chartRadius/3;
         return Stack(
           children: [
             PieChart(
@@ -53,7 +54,7 @@ class _StyledPieChartState extends State<StyledPieChart> {
                     value: amount,
                     title: '$percentage%',
                     radius: touchIndex == index ? chartRadius * 1.1 : chartRadius,
-                    titleStyle: TextStyles.pieChartPercentage,
+                    titleStyle: TextStyle(fontSize: fontSizeRadius,fontWeight: FontWeight.bold),
                   );
                 }).toList(),
                 sectionsSpace: 2,
@@ -78,7 +79,7 @@ class _StyledPieChartState extends State<StyledPieChart> {
               child: Center(
                 child: Text(
                   '\$${total.toStringAsFixed(2)}',
-                  style: TextStyles.pieChartTotal,
+                  style: TextStyle(fontSize: fontSizeCenter,fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),

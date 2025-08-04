@@ -21,75 +21,66 @@ class OverviewPageBody extends StatefulWidget {
 class _OverviewPageBodyState extends State<OverviewPageBody> {
   @override
   Widget build(BuildContext context) {
-    final user = Auth().currentUser;
-    if (user == null) return const Center(child: Text("User not signed in"));
+    return DefaultTabController(
+      initialIndex: 0,
+      length: 4,
+      child: Builder(builder: (context) {
+        final categories = Provider.of<List<Category>>(context);
+        final hasCategories = categories.isNotEmpty;
 
-    final db = DatabaseService(uid: user.uid);
-
-    return StreamProvider<List<Category>>.value(
-      initialData: const [],
-      value: db.categories,
-      child: DefaultTabController(
-        initialIndex: 0,
-        length: 4,
-        child: Builder(builder: (context) {
-          final categories = Provider.of<List<Category>>(context);
-          final hasCategories = categories.isNotEmpty;
-
-          return Scaffold(
-            appBar: AppBar(
-              toolbarHeight: 0,
-              bottom: TabBar(
-                dividerColor: AppColors.unknown,
-                unselectedLabelColor: AppColors.unknown,
-                labelColor: AppColors.main,
-                indicatorColor: AppColors.main,
-                overlayColor: WidgetStateProperty.all<Color>(AppColors.unknown),
-                tabs: const [
-                  Tab(text: "Total"),
-                  Tab(text: "Daily"),
-                  Tab(text: "Weekly"),
-                  Tab(text: "Monthly"),
-                ],
-              ),
-            ),
-            body: const TabBarView(
-              children: <Widget>[
-                TabBarViewPage(durationType: 0),
-                TabBarViewPage(durationType: 1),
-                TabBarViewPage(durationType: 2),
-                TabBarViewPage(durationType: 3),
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 0,
+            bottom: TabBar(
+              dividerColor: AppColors.unknown,
+              unselectedLabelColor: AppColors.unknown,
+              labelColor: AppColors.main,
+              indicatorColor: AppColors.main,
+              overlayColor: WidgetStateProperty.all<Color>(AppColors.unknown),
+              tabs: const [
+                Tab(text: "Total"),
+                Tab(text: "Daily"),
+                Tab(text: "Weekly"),
+                Tab(text: "Monthly"),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: hasCategories ? AppColors.affirmative : AppColors.unknown,
-              foregroundColor: AppColors.opposite,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              onPressed: () {
-                if (hasCategories) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const AddExpensePage()),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: AppConstants.snackBarDuration,
-                      content: Text("Please add a category first."),
-                      backgroundColor: AppColors.suggestion,
-                    ),
-                  );
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const ManageCategoriesPage()),
-                  );
-                }
-              },
-              child: const Icon(Icons.add),
+          ),
+          body: const TabBarView(
+            children: <Widget>[
+              TabBarViewPage(durationType: 0),
+              TabBarViewPage(durationType: 1),
+              TabBarViewPage(durationType: 2),
+              TabBarViewPage(durationType: 3),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: hasCategories ? AppColors.affirmative : AppColors.unknown,
+            foregroundColor: AppColors.opposite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-          );
-        }),
-      ),
+            onPressed: () {
+              if (hasCategories) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const AddExpensePage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    duration: AppConstants.snackBarDuration,
+                    content: Text("Please add a category first."),
+                    backgroundColor: AppColors.suggestion,
+                  ),
+                );
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const ManageCategoriesPage()),
+                );
+              }
+            },
+            child: const Icon(Icons.add),
+          ),
+        );
+      }),
     );
   }
 }
@@ -111,34 +102,30 @@ class _TabBarViewPageState extends State<TabBarViewPage> {
 
     final db = DatabaseService(uid: user.uid);
 
-    return StreamProvider<List<Category>>.value(
-      initialData: const [],
-      value: db.categories,
-      child: Consumer<List<Category>>(
-        builder: (context, categories, _) {
-          final categoryColors = {
-            for (var cat in categories) cat.category: cat.colorFromString(),
-          };
-          return FutureBuilder<List<Expense>>(
-            future: db.fetchAllExpenses(categories),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: StyledCircularProgressIndicator());
-              }
+    return Consumer<List<Category>>(
+      builder: (context, categories, _) {
+        final categoryColors = {
+          for (var cat in categories) cat.category: cat.colorFromString(),
+        };
+        return FutureBuilder<List<Expense>>(
+          future: db.fetchAllExpenses(categories),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: StyledCircularProgressIndicator());
+            }
 
-              final allExpenses = snapshot.data!;
-              final filteredExpenses = filterExpensesByPeriod(allExpenses, widget.durationType);
-              final dataMap = aggregateExpensesByCategory(filteredExpenses);
+            final allExpenses = snapshot.data!;
+            final filteredExpenses = filterExpensesByPeriod(allExpenses, widget.durationType);
+            final dataMap = aggregateExpensesByCategory(filteredExpenses);
 
-              return ExpenseOverview(
-                filteredExpenses: filteredExpenses,
-                categoryColors: categoryColors,
-                dataMap: dataMap,
-              );
-            },
-          );
-        },
-      ),
+            return ExpenseOverview(
+              filteredExpenses: filteredExpenses,
+              categoryColors: categoryColors,
+              dataMap: dataMap,
+            );
+          },
+        );
+      },
     );
   }
 }

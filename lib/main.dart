@@ -1,3 +1,5 @@
+import 'package:expenses_tracker/services/auth.dart';
+import 'package:expenses_tracker/services/database.dart';
 import 'package:expenses_tracker/services/dependency_injection.dart';
 import 'package:expenses_tracker/services/firebase_options.dart';
 import 'package:expenses_tracker/services/network_controller.dart';
@@ -5,8 +7,9 @@ import 'package:expenses_tracker/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:provider/provider.dart';
+
+import 'classes/category.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +21,19 @@ Future<void> main() async {
   } catch (e) {
     print("Firebase initialization error: $e");
   }
-  runApp(const MyApp());
+  final user = Auth().currentUser;
+  if (user == null) {
+    return;
+  }
+  final databaseService = DatabaseService(uid: user.uid);
+  runApp(
+    StreamProvider<List<Category>>.value(
+      value: databaseService.categories,
+      initialData: const [],
+      catchError: (_, __) => const [],
+      child: MyApp(),
+    ),
+  );
   DependencyInjection.init();
 }
 

@@ -36,83 +36,65 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Auth().currentUser;
+    return Consumer<List<Category>>(
+      builder: (context, categories, child) {
+        final categoryColors = {
+          for (var item in categories) item.category: item.colorFromString()
+        };
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(),
+          drawer: const NavigationDrawerCustom(),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                bool isLandscape = orientation == Orientation.landscape;
 
-    if (user == null) {
-      return const Center(child: Text('User not signed in'));
-    }
-
-    final databaseService = DatabaseService(uid: user.uid);
-
-    return MultiProvider(
-      providers: [
-        StreamProvider<List<Category>>.value(
-          initialData: const [],
-          value: databaseService.categories,
-          catchError: (_, __) => const [],
-        ),
-      ],
-      child: Consumer<List<Category>>(
-        builder: (context, categories, child) {
-          final categoryColors = {
-            for (var item in categories) item.category: item.colorFromString()
-          };
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(),
-            drawer: const NavigationDrawerCustom(),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: OrientationBuilder(
-                builder: (context, orientation) {
-                  bool isLandscape = orientation == Orientation.landscape;
-
-                  return isLandscape
-                      ? Padding(
-                        padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:
-                          [
-                            Expanded(child: AddCategorySection(
-                              categoryColors: categoryColors,
-                              textControl: textControl,
-                              selectedColor: selectedColor,
-                              changeColor: changeColor,
-                              addCategory: addCategory,
-                            ),),
-                            const SizedBox(width: 40),
-                            Expanded(child: MergeCategorySection(
-                              categoryColors: categoryColors,
-                              mergeCategories: mergeCategories,
-                            ),),
-                          ],
-                        ),
-                        )
-                      : Column(
-                          children: [
-                            const SizedBox(height: 85),
-                            AddCategorySection(
-                              categoryColors: categoryColors,
-                              textControl: textControl,
-                              selectedColor: selectedColor,
-                              changeColor: changeColor,
-                              addCategory: addCategory,
-                            ),
-                            const StyledSizedBox(height: 60),
-                            MergeCategorySection(
-                              categoryColors: categoryColors,
-                              mergeCategories: mergeCategories,
-                            ),
-                          ],
-                        );
-                },
-              ),
+                return isLandscape
+                    ? Padding(
+                      padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                        [
+                          Expanded(child: AddCategorySection(
+                            categoryColors: categoryColors,
+                            textControl: textControl,
+                            selectedColor: selectedColor,
+                            changeColor: changeColor,
+                            addCategory: addCategory,
+                          ),),
+                          const SizedBox(width: 40),
+                          Expanded(child: MergeCategorySection(
+                            categoryColors: categoryColors,
+                            mergeCategories: mergeCategories,
+                          ),),
+                        ],
+                      ),
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(height: 85),
+                          AddCategorySection(
+                            categoryColors: categoryColors,
+                            textControl: textControl,
+                            selectedColor: selectedColor,
+                            changeColor: changeColor,
+                            addCategory: addCategory,
+                          ),
+                          const StyledSizedBox(height: 60),
+                          MergeCategorySection(
+                            categoryColors: categoryColors,
+                            mergeCategories: mergeCategories,
+                          ),
+                        ],
+                      );
+              },
             ),
-          );
-
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
