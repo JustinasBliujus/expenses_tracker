@@ -1,7 +1,12 @@
+import 'package:expenses_tracker/services/dependency_injection.dart';
 import 'package:expenses_tracker/services/firebase_options.dart';
+import 'package:expenses_tracker/services/network_controller.dart';
 import 'package:expenses_tracker/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +19,7 @@ Future<void> main() async {
     print("Firebase initialization error: $e");
   }
   runApp(const MyApp());
+  DependencyInjection.init();
 }
 
 class MyApp extends StatefulWidget {
@@ -26,7 +32,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    Get.put(NetworkController());
+    return const GetMaterialApp(
       title: 'Expenses Tracker',
       home: WidgetTree(),
     );

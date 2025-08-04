@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../services/auth.dart';
 import '../../services/database.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
+import '../../services/network_controller.dart';
 
 String colorToHexString(Color color) {
   return '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
@@ -14,17 +16,20 @@ Future<void> addCategory(
     Color? selectedColor,
     VoidCallback clearSelections,
     ) async {
+
+  final NetworkController networkController = Get.find();
+
+  bool requestIsFresh = true;
+
   if (textControl.text.isNotEmpty && selectedColor != null) {
-    final existingNames =
-    categoryColors.keys.map((e) => e.toLowerCase()).toList();
+    final existingNames = categoryColors.keys.map((e) => e.toLowerCase()).toList();
 
     if (existingNames.contains(textControl.text.toLowerCase())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: AppConstants.snackBarDuration,
-          content: Text('Category name already exists'),
-          backgroundColor: AppColors.suggestion,
-        ),
+      Get.rawSnackbar(
+        message: 'Category name already exists',
+        backgroundColor: AppColors.suggestion,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: AppConstants.snackBarDuration,
       );
       return;
     }
@@ -32,37 +37,49 @@ Future<void> addCategory(
     final categoryService = DatabaseService(uid: Auth().currentUser!.uid);
 
     try {
+      // If offline, show cache message
+      if (!networkController.isOnline.value) {
+        Get.rawSnackbar(
+          message: 'You are offline. Changes will be cached locally.',
+          backgroundColor: AppColors.error,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: AppConstants.snackBarDurationLonger,
+          icon: Icon(Icons.wifi_off, color: AppColors.opposite),
+        );
+        requestIsFresh = false;//to prevent snack bar queueing when offline
+      }
+      String tempText = textControl.text; //Clear textField before
+      clearSelections();
+      // Firebase method. this queues silently when offline, code under waits
       await categoryService.addCategory(
-        textControl.text,
+        tempText,
         colorToHexString(selectedColor),
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: AppConstants.snackBarDuration,
-          content: Text('Category added successfully'),
+      if(requestIsFresh){
+        Get.rawSnackbar(
+          message: 'Category added successfully',
           backgroundColor: AppColors.affirmative,
-        ),
-      );
-
-      clearSelections();
-
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+          snackPosition: SnackPosition.BOTTOM,
           duration: AppConstants.snackBarDuration,
-          content: Text('Failed to add category'),
+        );
+      }
+    } catch (e) { // firebase error
+      // Failed to add category
+      if(requestIsFresh){
+        Get.rawSnackbar(
+          message: 'Failed to add category.',
           backgroundColor: AppColors.error,
-        ),
-      );
+          snackPosition: SnackPosition.BOTTOM,
+          duration: AppConstants.snackBarDuration,
+        );
+      }
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: AppConstants.snackBarDuration,
-        content: Text('Please enter a name and select a color'),
-        backgroundColor: AppColors.suggestion,
-      ),
+  } else { //else then name or color not selected
+    Get.rawSnackbar(
+      message: 'Please enter a name and select a color',
+      backgroundColor: AppColors.suggestion,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: AppConstants.snackBarDuration,
     );
   }
 }

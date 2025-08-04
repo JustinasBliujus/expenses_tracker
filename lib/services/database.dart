@@ -29,7 +29,6 @@ class DatabaseService {
       });
     }
   }
-
   // Add a new category
   Future<DocumentReference> addCategory(String category, String colorHex) async {
     return await categoriesCollection.add({
@@ -37,7 +36,18 @@ class DatabaseService {
       'color': colorHex,
     });
   }
+  void checkIfSynced(DocumentReference docRef) async {
+    DocumentSnapshot snapshot = await docRef.get();
 
+    bool fromCache = snapshot.metadata.isFromCache;
+    bool hasPendingWrites = snapshot.metadata.hasPendingWrites;
+
+    if (fromCache || hasPendingWrites) {
+      print("Document is in cache or pending write to server (offline or unsynced).");
+    } else {
+      print("Document is confirmed on server (online write).");
+    }
+  }
   Future<void> mergeCategories(String fromCategory, String toCategory) async {
     final db = DatabaseService(uid: uid);
 

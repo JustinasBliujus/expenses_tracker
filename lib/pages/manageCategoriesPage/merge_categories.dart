@@ -2,53 +2,70 @@ import 'package:flutter/material.dart';
 import '../../services/auth.dart';
 import '../../services/database.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
+import 'package:get/get.dart';
 
-Future<void> mergeCategories(String? categoryToMergeFirst,
+import '../../services/network_controller.dart';
+
+Future<void> mergeCategories(
+    String? categoryToMergeFirst,
     String? categoryToMergeSecond,
     BuildContext context,
     VoidCallback clearSelections,
     ) async {
+
   final service = DatabaseService(uid: Auth().currentUser!.uid);
 
-  if(categoryToMergeFirst == null || categoryToMergeSecond == null){
-    ScaffoldMessenger.of(context).showSnackBar(
+  bool requestIsFresh = true;
+  final NetworkController networkController = Get.find();
 
-      const SnackBar(
-          duration: AppConstants.snackBarDuration,
-          content: Text('Please select both categories to merge'),
-          backgroundColor: AppColors.suggestion),
+  if (categoryToMergeFirst == null || categoryToMergeSecond == null) {
+    Get.rawSnackbar(
+      message: 'Please select both categories to merge',
+      backgroundColor: AppColors.suggestion,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: AppConstants.snackBarDuration,
     );
-  }
-  else if(categoryToMergeFirst == categoryToMergeSecond){
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          duration: AppConstants.snackBarDuration,
-          content: Text('You cannot merge the same category'),
-          backgroundColor: AppColors.suggestion
-      ),
+  } else if (categoryToMergeFirst == categoryToMergeSecond) {
+    Get.rawSnackbar(
+      message: 'You cannot merge the same category',
+      backgroundColor: AppColors.error,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: AppConstants.snackBarDuration,
     );
-  }
-  else{
+  } else {
     try {
-      await service.mergeCategories(categoryToMergeFirst, categoryToMergeSecond);
+      if (!networkController.isOnline.value){
+        Get.rawSnackbar(
+          message: 'You are offline. Changes will be cached locally.',
+          backgroundColor: AppColors.error,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: AppConstants.snackBarDurationLonger,
+          icon: Icon(Icons.wifi_off, color: AppColors.opposite),
+        );
+        requestIsFresh = false;//to prevent snack bar queueing when offline
+      }
 
       clearSelections();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            duration: AppConstants.snackBarDuration,
-            content: Text('Categories merged'),
-            backgroundColor: AppColors.affirmative
-        ),
-      );
+      await service.mergeCategories(categoryToMergeFirst, categoryToMergeSecond);
+
+      if(requestIsFresh) {
+        Get.rawSnackbar(
+          message: 'Categories merged',
+          backgroundColor: AppColors.affirmative,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: AppConstants.snackBarDuration,
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            duration: AppConstants.snackBarDuration,
-            content: Text('Failed to merge categories: ${e.toString()}'),
-            backgroundColor: AppColors.error)
-        ,
-      );
+      if(requestIsFresh) {
+        Get.rawSnackbar(
+          message: 'Failed to merge categories',
+          backgroundColor: AppColors.error,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: AppConstants.snackBarDuration,
+        );
+      }
     }
   }
 }

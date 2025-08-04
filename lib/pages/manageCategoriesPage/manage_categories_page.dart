@@ -31,7 +31,6 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
     setState(() {
       pickerColor = color;
       selectedColor = pickerColor;
-      Navigator.of(context).pop();
     });
   }
 
