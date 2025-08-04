@@ -18,7 +18,8 @@ class _LoginRegisterState extends State<LoginRegister> {
 
   final TextEditingController controllerEmail = TextEditingController();
   final TextEditingController controllerPassword = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  final loginFormKey = GlobalKey<FormState>();
+  final registerFormKey = GlobalKey<FormState>();
 
   Future<void> signInWithEmailAndPassword() async {
     setState(() {
@@ -31,8 +32,6 @@ class _LoginRegisterState extends State<LoginRegister> {
         password: controllerPassword.text.trim(),
       );
       if (!mounted) return;
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const MyApp()));
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -57,8 +56,6 @@ class _LoginRegisterState extends State<LoginRegister> {
         password: controllerPassword.text.trim(),
       );
       if (!mounted) return;
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const MyApp()));
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -103,7 +100,7 @@ class _LoginRegisterState extends State<LoginRegister> {
           children: [
             const StyledSizedBox(height: 80,),
             Form(
-              key: formKey,
+            key: isLogin ? loginFormKey : registerFormKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -122,7 +119,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                     buttonText:isLogin ? 'Login' : 'Register',
                     buttonColor: AppColors.affirmative,
                     onPressed: () {
-                      if (formKey.currentState?.validate() ?? false) {
+                      if ((isLogin ? loginFormKey : registerFormKey).currentState?.validate() ?? false) {
                         isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
                       }
                     },),

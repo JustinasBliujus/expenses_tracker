@@ -15,18 +15,28 @@ class Auth {
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      print("Login error: ${e.code} - ${e.message}");
+      rethrow;
+    }
   }
+
 
   // Create a new user with email and password
   Future<void> createUserWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    if (currentUser != null) {
-      // initialize user in firebase
-      await DatabaseService(uid: currentUser!.uid).initializeUser();
+    try{
+      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      if (currentUser != null) {
+        // initialize user in firebase
+        await DatabaseService(uid: currentUser!.uid).initializeUser();
+      }
+    } on FirebaseAuthException catch (e) {
+      print("Register error: ${e.code} - ${e.message}");
     }
   }
 
