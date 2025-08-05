@@ -96,8 +96,5 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ## To-Do
 - Keep improving file structure and maintainability
 - fix imports
-- set limits for category number per user
-- set limits for how many expenses are fetches in history tab
 - test for null values
-- firebase data structure improvement by removing category attribute from expense since it can be reached by parent category anyway
 - create home widget to add expense quickly
