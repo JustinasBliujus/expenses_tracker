@@ -44,12 +44,12 @@ class _OverviewPageState extends State<OverviewPage> {
               ],
             ),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: <Widget>[
-              TabBarViewPage(durationType: 0),
-              TabBarViewPage(durationType: 1),
-              TabBarViewPage(durationType: 2),
-              TabBarViewPage(durationType: 3),
+              TabBarViewPage(durationType: 0, categories: categories),
+              TabBarViewPage(durationType: 1, categories: categories),
+              TabBarViewPage(durationType: 2, categories: categories),
+              TabBarViewPage(durationType: 3, categories: categories),
             ],
           ),
           floatingActionButton: FloatingActionButton(

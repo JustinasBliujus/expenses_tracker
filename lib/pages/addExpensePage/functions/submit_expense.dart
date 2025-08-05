@@ -47,6 +47,7 @@ Future<void> submitExpense(
 
     clearSelection();
 
+    // await firebase method to add expense. When offline code stalls until back online
     await databaseService.addExpenseToCategory(
       selectedDate,
       amount,

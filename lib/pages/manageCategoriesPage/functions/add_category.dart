@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../classes/category.dart';
+import '../../../helperFunctions/color_to_hex_string.dart';
 import '../../../services/auth.dart';
 import '../../../services/database.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 import '../../../services/network_controller.dart';
-
-String colorToHexString(Color color) {
-  return '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
-}
 
 Future<void> addCategory(
     List<Category> categories,
