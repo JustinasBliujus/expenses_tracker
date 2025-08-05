@@ -37,26 +37,51 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ![App Turning On](screenshots/2.png)
 
 ### Overview Page without data
-![Overview](screenshots/3.png)
+![Overview](screenshots/no_expenses.png)
 
 ### Login Page
-![Login](screenshots/10.png)
+![Login](screenshots/login.png)
 
 ### Overview Page
-![Overview](screenshots/8.png)
+![Overview](screenshots/overview.png)
 
-### History Page
-![History](screenshots/7.png)
+### Overview Page Landscape
+![Overview Landscape](screenshots/overview_landscape.png)
 
-### Categories Page
-![Categories](screenshots/4.png)
-![Choosing Category Color](screenshots/5.png)
+### History Page without data
+![History Without data](screenshots/no_history.png)
+
+### History Page 
+![History](screenshots/history_page.png)
+
+### History Page Landscape
+![History](screenshots/history_landscape.png)
+
+### Add Categories Page
+![Categories](screenshots/merge.png)
+
+### Category color picker
+![Choosing Category Color](screenshots/color_picker.png)
+
+### Add Categories Page Landscape
+![Categories Landscape](screenshots/merge_landscape.png)
 
 ### Adding Expenses
-![Overview](screenshots/6.png)
+![Overview](screenshots/add_expense.png)
+
+### Date Picker
+![Date Picker](screenshots/date_picker.png)
+
+### Time Picker
+![Time Picker](screenshots/time_picker.png)
 
 ### Drawer
-![Drawer](screenshots/9.png)
+![Drawer](screenshots/navigation_drawer.png)
+
+### Snack Bar Types
+![Snak Bars](screenshots/snackbar_1.png)
+![Snak Bars](screenshots/snack_2.png)
+![Snak Bars](screenshots/snack_3.png)
 
 ## To-Do
 - Keep improving file structure and maintainability
