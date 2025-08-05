@@ -21,6 +21,9 @@ class OverviewPageBody extends StatefulWidget {
 class _OverviewPageBodyState extends State<OverviewPageBody> {
   @override
   Widget build(BuildContext context) {
+
+    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return DefaultTabController(
       initialIndex: 0,
       length: 4,
@@ -79,6 +82,8 @@ class _OverviewPageBodyState extends State<OverviewPageBody> {
             },
             child: const Icon(Icons.add),
           ),
+          floatingActionButtonLocation: isLandscape ? FloatingActionButtonLocation.endFloat
+          : FloatingActionButtonLocation.centerFloat,
         );
       }),
     );
@@ -145,7 +150,7 @@ class ExpenseOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totals = dataMap.entries.toList();
-
+    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final bool noExpenses = filteredExpenses.isEmpty;
 
     final pieChartWidget = StyledPieChart(expenses: filteredExpenses, categoryColors: categoryColors);
@@ -155,15 +160,19 @@ class ExpenseOverview extends StatelessWidget {
       itemBuilder: (context, index) {
         final entry = totals[index];
         final color = categoryColors[entry.key] ?? AppColors.unknown;
-        return ListTile(
-          leading: Container(
-            width: 16,
-            height: 16,
-            color: color,
-            margin: const EdgeInsets.only(right: 8),
+        return Padding(
+          padding: isLandscape ? EdgeInsets.fromLTRB(0, 0, 85, 0)
+          : EdgeInsets.all(0),
+          child: ListTile(
+            leading: Container(
+              width: 16,
+              height: 16,
+              color: color,
+              margin: const EdgeInsets.only(right: 8),
+            ),
+            title: Text(entry.key),
+            trailing: Text('\$${entry.value.toStringAsFixed(2)}'),
           ),
-          title: Text(entry.key),
-          trailing: Text('\$${entry.value.toStringAsFixed(2)}'),
         );
       },
     );

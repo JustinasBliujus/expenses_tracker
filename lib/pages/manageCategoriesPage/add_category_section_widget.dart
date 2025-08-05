@@ -64,6 +64,7 @@ class _AddCategorySectionState extends State<AddCategorySection> {
                 ),
               ),
             );
+            FocusScope.of(context).unfocus(); //remove keyboard
           },
           onPressedSecond: () {
             widget.addCategory(
