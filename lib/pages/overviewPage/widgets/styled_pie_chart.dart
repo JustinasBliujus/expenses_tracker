@@ -83,7 +83,7 @@ class _StyledPieChartState extends State<StyledPieChart> {
             Positioned.fill(
               child: Center(
                 child: Builder(builder: (_) {
-                  final totalText = '\$${total.toStringAsFixed(1)}';
+                  final totalText = '${AppConstants.currencySign}${total.toStringAsFixed(1)}';
                   final centerDigitCount = totalText.length;
                   return Text(
                     totalText,

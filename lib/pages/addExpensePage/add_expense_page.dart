@@ -1,13 +1,15 @@
 import 'package:expenses_tracker/classes/category.dart';
-import 'package:expenses_tracker/pages/addExpensePage/submit_expense.dart';
-import 'package:expenses_tracker/pages/addExpensePage/time_section_widget.dart';
+import 'package:expenses_tracker/pages/addExpensePage/functions/submit_expense.dart';
+import 'package:expenses_tracker/pages/addExpensePage/functions/time_picker_handler.dart';
+import 'package:expenses_tracker/pages/addExpensePage/widgets/time_section_widget.dart';
 import 'package:expenses_tracker/pages/overviewPage/overview_page.dart';
 import 'package:expenses_tracker/services/auth.dart';
 import 'package:expenses_tracker/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
-import 'field_input_section_widget.dart';
+import 'functions/date_picker_handler.dart';
+import 'widgets/field_input_section_widget.dart';
 
 class AddExpensePage extends StatefulWidget {
   const AddExpensePage({super.key});
@@ -23,79 +25,36 @@ class _AddExpenseState extends State<AddExpensePage> {
   TimeOfDay selectedTime = TimeOfDay.now();
 
   void selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
+    await datePickerHandler(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.main,
-              onPrimary: AppColors.opposite,
-              onSurface: AppColors.main,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.main,
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      selectedDate: selectedDate,
+      selectedTime: selectedTime,
+      onDateSelected: (picked) {
+        setState(() {
+          selectedDate = picked;
+        });
+        },
     );
-    if (pickedDate != null) {
-      setState(() {
-        selectedDate = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          selectedTime.hour,
-          selectedTime.minute,
-        );
-      });
-    }
   }
 
+
   void selectTime(BuildContext context) async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.main,
-              secondary: AppColors.main,
-              onSecondary: AppColors.opposite,
-              onPrimary: AppColors.opposite,
-              onSurface: AppColors.main,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.main,
-              ),
-            ),
-          ),
-          child: child!,
-        );
+    await timePickerHandler(
+      context,
+      selectedTime,
+      selectedDate,
+          (pickedDateTime) {
+        setState(() {
+          selectedDate = pickedDateTime;
+          selectedTime = TimeOfDay(
+              hour: pickedDateTime.hour,
+              minute: pickedDateTime.minute);
+        });
       },
     );
-    if (pickedTime != null) {
-      setState(() {
-        selectedTime = pickedTime;
-        selectedDate = DateTime(
-          selectedDate.year,
-          selectedDate.month,
-          selectedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-      });
-    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

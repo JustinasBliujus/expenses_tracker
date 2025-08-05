@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../classes/category.dart';
-import 'add_category.dart';
-import 'add_category_section_widget.dart';
-import 'merge_categories.dart';
+import 'functions/add_category.dart';
+import 'widgets/add_category_section_widget.dart';
+import 'functions/merge_categories.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
-import 'merge_category_section_widget.dart';
+import 'widgets/merge_category_section_widget.dart';
 
 class ManageCategoriesPage extends StatefulWidget {
   const ManageCategoriesPage({super.key});

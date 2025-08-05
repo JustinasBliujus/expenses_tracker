@@ -1,4 +1,4 @@
-import 'package:expenses_tracker/pages/manageCategoriesPage/text_input_with_two_buttons.dart';
+import 'package:expenses_tracker/pages/manageCategoriesPage/widgets/text_input_with_two_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';

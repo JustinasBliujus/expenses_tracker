@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
-Future<void> selectDate({
+Future<void> datePickerHandler({
   required BuildContext context,
   required DateTime selectedDate,
   required TimeOfDay selectedTime,

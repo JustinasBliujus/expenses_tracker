@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../services/auth.dart';
-import '../../services/database.dart';
+import '../../../services/auth.dart';
+import '../../../services/database.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 import 'package:get/get.dart';
 
-import '../../services/network_controller.dart';
+import '../../../services/network_controller.dart';
 
 Future<void> mergeCategories(
     String? categoryToMergeFirst,
