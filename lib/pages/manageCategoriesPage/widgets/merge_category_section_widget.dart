@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
+import '../../../classes/category.dart';
+
 
 class MergeCategorySection extends StatefulWidget {
-  final Map<String, Color> categoryColors;
+  final List<Category> categories;
   final Function(String?, String?, BuildContext, VoidCallback) mergeCategories;
 
   const MergeCategorySection({
     super.key,
-    required this.categoryColors,
+    required this.categories,
     required this.mergeCategories,
   });
 
@@ -22,6 +24,9 @@ class _MergeCategorySectionState extends State<MergeCategorySection> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryColors = {
+      for (var item in widget.categories) item.category: item.colorFromString()
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,7 +34,7 @@ class _MergeCategorySectionState extends State<MergeCategorySection> {
         const StyledSizedBox(height: 15),
         CategoryDropdown(
           hint: "Category To Delete",
-          categoryColors: widget.categoryColors,
+          categoryColors: categoryColors,
           selectedValue: categoryToMergeFirst,
           onChanged: (value) {
             setState(() {
@@ -43,7 +48,7 @@ class _MergeCategorySectionState extends State<MergeCategorySection> {
             Expanded(
               child: CategoryDropdown(
                 hint: "Merge Into",
-                categoryColors: widget.categoryColors,
+                categoryColors: categoryColors,
                 selectedValue: categoryToMergeSecond,
                 onChanged: (value) {
                   setState(() {

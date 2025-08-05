@@ -33,9 +33,6 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
   Widget build(BuildContext context) {
     return Consumer<List<Category>>(
       builder: (context, categories, child) {
-        final categoryColors = {
-          for (var item in categories) item.category: item.colorFromString()
-        };
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(),
@@ -54,14 +51,14 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                         children:
                         [
                           Expanded(child: AddCategorySection(
-                            categoryColors: categoryColors,
+                            categories: categories,
                             textControl: textControl,
                             changeColor: changeColor,
                             addCategory: addCategory,
                           ),),
                           const SizedBox(width: 40),
                           Expanded(child: MergeCategorySection(
-                            categoryColors: categoryColors,
+                            categories: categories,
                             mergeCategories: mergeCategories,
                           ),),
                         ],
@@ -71,14 +68,14 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                         children: [
                           const SizedBox(height: 85),
                           AddCategorySection(
-                            categoryColors: categoryColors,
+                            categories: categories,
                             textControl: textControl,
                             changeColor: changeColor,
                             addCategory: addCategory,
                           ),
                           const StyledSizedBox(height: 60),
                           MergeCategorySection(
-                            categoryColors: categoryColors,
+                            categories: categories,
                             mergeCategories: mergeCategories,
                           ),
                         ],

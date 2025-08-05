@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
 
+import '../../../classes/category.dart';
+
 class AddCategorySection extends StatefulWidget {
-  final Map<String, Color> categoryColors;
+  final List<Category> categories;
   final TextEditingController textControl;
   final void Function(Color) changeColor;
   final void Function(
-      Map<String, Color>,
+      List<Category>,
       BuildContext,
       TextEditingController,
       Color?,
@@ -17,7 +19,7 @@ class AddCategorySection extends StatefulWidget {
 
   const AddCategorySection({
     super.key,
-    required this.categoryColors,
+    required this.categories,
     required this.textControl,
     required this.changeColor,
     required this.addCategory,
@@ -32,6 +34,9 @@ class _AddCategorySectionState extends State<AddCategorySection> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryColors = {
+      for (var item in widget.categories) item.category: item.colorFromString()
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -68,7 +73,7 @@ class _AddCategorySectionState extends State<AddCategorySection> {
           },
           onPressedSecond: () {
             widget.addCategory(
-              widget.categoryColors,
+              widget.categories,
               context,
               widget.textControl,
               selectedColor,
@@ -80,7 +85,7 @@ class _AddCategorySectionState extends State<AddCategorySection> {
               },
             );
           },
-          categoryColors: widget.categoryColors,
+          categoryColors: categoryColors,
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../classes/category.dart';
 import '../../../services/auth.dart';
 import '../../../services/database.dart';
 import 'package:expenses_tracker/pages/reusable/reusable_export.dart';
@@ -10,7 +11,7 @@ String colorToHexString(Color color) {
 }
 
 Future<void> addCategory(
-    Map<String, dynamic> categoryColors,
+    List<Category> categories,
     BuildContext context,
     TextEditingController textControl,
     Color? selectedColor,
@@ -22,7 +23,18 @@ Future<void> addCategory(
   bool requestIsFresh = true;
 
   if (textControl.text.isNotEmpty && selectedColor != null) {
-    final existingNames = categoryColors.keys.map((e) => e.toLowerCase()).toList();
+    final existingNames = categories.map((c) => c.category).toList();
+
+    // CATEGORY LIMIT PER USER
+    if(categories.length >= AppConstants.maxCategoryAmount){
+      Get.rawSnackbar(
+        message: 'Category Limit is ${AppConstants.maxCategoryAmount}',
+        backgroundColor: AppColors.suggestion,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: AppConstants.snackBarDuration,
+      );
+      return;
+    }
 
     if (existingNames.contains(textControl.text.toLowerCase())) {
       Get.rawSnackbar(
@@ -48,8 +60,10 @@ Future<void> addCategory(
         );
         requestIsFresh = false;//to prevent snack bar queueing when offline
       }
+
       String tempText = textControl.text; //Clear textField before
       clearSelections();
+
       // Firebase method. this queues silently when offline, code under waits
       await categoryService.addCategory(
         tempText,
