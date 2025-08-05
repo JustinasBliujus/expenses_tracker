@@ -5,25 +5,26 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ## Features
 
 - **User Authentication**  
-  Register and log in  with email and password.
+  Register and log in with email and password
 
 - **Intuitive Navigation**  
-  Access the app through a  left-side drawer menu.
+  Access the app through a left-side drawer menu
 
 - **Overview Page**  
-  - Default landing page after login.  
-  - View expenses summarized by daily, weekly, monthly, or all-time periods.  
-  - Visualize spending with an interactive pie chart breaking down expenses by category.
+  - Default landing page after login 
+  - View expenses summarized by daily, weekly, monthly, or all-time periods. 
+  - Visualize spending with an interactive pie chart breaking down expenses by category
 
 - **History Page**  
   - A list of all user's spendings
+  - Ability to delete on long hold
 
 - **Adding Expenses**  
-  - Enter the amount and choose category and date.
+  - Enter the amount and choose category and date
     
 - **Categories Management**  
-  - Create and customize expense categories with colors.  
-  - Organize your expenses by moving them between categories for better tracking.
+  - Create and customize expense categories with colors
+  - Organize your expenses by merging categories
 
 ## Screenshots
 
