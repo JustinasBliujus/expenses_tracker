@@ -25,7 +25,7 @@ Flutter app for android for personal use. For tracking and managing expenses.
   - Create and customize expense categories with colors.  
   - Organize your expenses by moving them between categories for better tracking.
 
-## Screenshots (a bit outdated)
+## Screenshots
 
 ### App Icon
 ![Icon](screenshots/icon.png)
@@ -36,11 +36,11 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ### App Icon while turning on
 ![App Turning On](screenshots/2.png)
 
-### Overview Page without data
-![Overview](screenshots/no_expenses.png)
-
 ### Login Page
 ![Login](screenshots/login.png)
+
+### Overview Page without data
+![Overview](screenshots/no_expenses.png)
 
 ### Overview Page
 ![Overview](screenshots/overview.png)
@@ -67,7 +67,10 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ![Categories Landscape](screenshots/merge_landscape.png)
 
 ### Adding Expenses
-![Overview](screenshots/add_expense.png)
+![Adding Expenses](screenshots/add_expense.png)
+
+### Adding Expenses Landscape
+![Adding Expenses Landscape](screenshots/add_expense_landscape.png)
 
 ### Date Picker
 ![Date Picker](screenshots/date_picker.png)
@@ -78,9 +81,16 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ### Drawer
 ![Drawer](screenshots/navigation_drawer.png)
 
-### Snack Bar Types
+### Snack Bar success
+![Snak Bars](screenshots/snack_0.png)
+
+### Snack Bar failure
 ![Snak Bars](screenshots/snackbar_1.png)
+
+### Snack Bar suggestion
 ![Snak Bars](screenshots/snack_2.png)
+
+### Snack Bar no internet connection
 ![Snak Bars](screenshots/snack_3.png)
 
 ## To-Do
