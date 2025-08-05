@@ -76,7 +76,7 @@ Flutter app for android for personal use. For tracking and managing expenses.
 ![Date Picker](screenshots/date_picker.png)
 
 ### Time Picker
-![Time Picker](screenshots/time_picker.png)
+![Time Picker](screenshots/tie_picker.png)
 
 ### Drawer
 ![Drawer](screenshots/navigation_drawer.png)
