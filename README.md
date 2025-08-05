@@ -1,7 +1,6 @@
 # ExpenseTracker
 
 Flutter app for android for personal use. For tracking and managing expenses.
-Code is located in the master branch.
 
 ## Features
 
@@ -26,7 +25,7 @@ Code is located in the master branch.
   - Create and customize expense categories with colors.  
   - Organize your expenses by moving them between categories for better tracking.
 
-## Screenshots
+## Screenshots (a bit outdated)
 
 ### App Icon
 ![Icon](screenshots/icon.png)
@@ -58,3 +57,12 @@ Code is located in the master branch.
 
 ### Drawer
 ![Drawer](screenshots/9.png)
+
+## To-Do
+- Keep improving file structure and maintainability
+- fix imports
+- set limits for category number per user
+- set limits for how many expenses are fetches in history tab
+- test for null values
+- firebase data structure improvement by removing category attribute from expense since it can be reached by parent category anyway
+- create home widget to add expense quickly
